@@ -1,0 +1,19 @@
+SRS Document.pdf
+
+# Dependencies
+node_modules/
+
+# Environment files
+.env
+.env.*
+
+# Logs
+*.log
+logs/
+
+# Uploads
+server/uploads/
+
+# OS files
+Thumbs.db
+Desktop.ini
