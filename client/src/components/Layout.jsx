@@ -1,5 +1,5 @@
 import { Navigate, Outlet, Link, useLocation } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/AuthContext.js';
 
 const SidebarItem = ({ to, label, icon }) => {
   const location = useLocation();
@@ -8,11 +8,7 @@ const SidebarItem = ({ to, label, icon }) => {
   return (
     <Link
       to={to}
-      className={`block px-4 py-2 rounded transition ${
-        isActive 
-          ? 'bg-indigo-600 text-white' 
-          : 'text-gray-300 hover:bg-gray-800'
-      }`}
+      className={`sidebar-item ${isActive ? 'sidebar-item-active' : ''}`}
     >
       {label}
     </Link>
@@ -22,43 +18,71 @@ const SidebarItem = ({ to, label, icon }) => {
 export default function Layout() {
   const { user, logout, loading } = useAuth();
 
-  if (loading) return <div className="p-10 text-center">Loading...</div>;
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-page">
+        <div className="text-center">
+          <div className="loading-spinner mx-auto mb-4"></div>
+          <p className="text-muted">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+  
   if (!user) return <Navigate to="/login" replace />;
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="app-shell flex min-h-screen">
       {/* Sidebar */}
-      <aside className="w-64 bg-gray-900 text-white p-6 hidden md:block">
-        <h1 className="text-2xl font-bold mb-10 text-indigo-400">InternTrack</h1>
-        <nav className="space-y-2">
+      <aside className="sidebar w-64 p-6 hidden md:block">
+        <div className="mb-10">
+          <h1 className="text-2xl font-bold text-gradient">Intern Diary</h1>
+          <p className="text-xs text-muted mt-1">Track your journey</p>
+        </div>
+        
+        <nav className="space-y-1.5">
           <SidebarItem to="/dashboard" label="Opportunities" />
           <SidebarItem to="/applications" label="My Applications" />
           <SidebarItem to="/planner" label="Prep Planner" />
           
-          {/* Only show this if the user is an Admin */}
+          {/* Admin Section */}
           {user?.role === 'admin' && (
-            <div className="pt-4 mt-4 border-t border-gray-700">
-              <p className="px-4 text-xs font-semibold text-gray-500 uppercase mb-2">Admin Tools</p>
-              <SidebarItem to="/admin" label="Post Internship" />
-            </div>
+            <>
+              <div className="pt-4 mt-4" style={{ borderTop: '1px solid var(--border-separator)' }}>
+                <p className="px-3 text-xs font-semibold text-muted uppercase tracking-wider mb-2">
+                  Admin Tools
+                </p>
+                <SidebarItem to="/admin" label="Post Opportunity" />
+              </div>
+            </>
           )}
         </nav>
-        <button 
-          onClick={logout}
-          className="mt-10 w-full text-left px-4 py-2 text-gray-400 hover:text-red-400 transition"
-        >
-          Logout
-        </button>
+        
+        {/* User info and logout */}
+        <div className="mt-auto pt-6" style={{ borderTop: '1px solid var(--border-separator)', marginTop: '3rem' }}>
+          <div className="px-3 mb-3">
+            <p className="text-sm font-medium text-primary">{user?.name}</p>
+            <p className="text-xs text-muted">{user?.email}</p>
+          </div>
+          <button 
+            onClick={logout}
+            className="w-full text-left px-3 py-2 text-sm text-muted hover:text-red-400 hover:bg-red-900/10 rounded-md transition"
+          >
+            Logout
+          </button>
+        </div>
       </aside>
 
       {/* Main Content Area */}
       <main className="flex-1 overflow-y-auto">
-        <header className="bg-white shadow-sm p-4 md:hidden flex justify-between">
-           <span className="font-bold text-indigo-600">InternTrack</span>
-           {/* Mobile menu toggle would go here */}
+        {/* Mobile Header */}
+        <header className="card md:hidden flex justify-between items-center p-4 m-4 mb-0">
+          <h1 className="font-bold text-gradient">Intern Diary</h1>
+          <span className="text-xs text-muted">{user?.name}</span>
         </header>
-        <div className="p-8">
-          <Outlet /> {/* This renders the specific page (Dashboard, etc.) */}
+        
+        <div className="p-6 md:p-8">
+          <Outlet />
         </div>
       </main>
     </div>

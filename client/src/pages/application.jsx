@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { apiRequest } from '../services/api';
+import { apiRequest } from '../services/api.js';
 
 export default function Applications() {
   const [apps, setApps] = useState([]);

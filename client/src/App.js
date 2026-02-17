@@ -1,13 +1,13 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
-import Layout from './components/layout';
-import Login from './pages/login';
-import Signup from './pages/signup';
-import Dashboard from './pages/dashboard';
-import Planner from './pages/planner';
-import Applications from './pages/application';
-import Profile from './pages/profile';
-import AdminDashboard from './pages/adminDashboard';
+import { AuthProvider } from './context/AuthContext.js';
+import Layout from './components/layout.jsx';
+import Login from './pages/login.jsx';
+import Signup from './pages/signup.jsx';
+import Dashboard from './pages/dashboard.jsx';
+import Planner from './pages/planner.jsx';
+import Applications from './pages/application.jsx';
+import Profile from './pages/profile.jsx';
+import AdminDashboard from './pages/adminDashboard.jsx';
 
 function App() {
   return (

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { apiRequest } from '../services/api';
+import { apiRequest } from '../services/api.js';
 
 export default function AdminDashboard() {
   const [formData, setFormData] = useState({
