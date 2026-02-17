@@ -34,7 +34,7 @@ export default function Layout() {
   return (
     <div className="app-shell flex min-h-screen">
       {/* Sidebar */}
-      <aside className="sidebar w-64 p-6 hidden md:block">
+      <aside className="sidebar w-64 p-6 hidden md:block flex flex-col">
         <div className="mb-10">
           <h1 className="text-2xl font-bold text-gradient">Intern Diary</h1>
           <p className="text-xs text-muted mt-1">Track your journey</p>
@@ -72,9 +72,9 @@ export default function Layout() {
           </button>
         </div>
         
-        {/* Watermark */}
-        <div className="px-3 pt-4 pb-2">
-          <p className="text-xs text-muted opacity-50">Made by Abhigyan Srivastava</p>
+        {/* Footer */}
+        <div className="pt-4 mt-4 text-center" style={{ borderTop: '1px solid var(--border-separator)' }}>
+          <p className="text-xs text-muted opacity-40">Made by Abhigyan Srivastava</p>
         </div>
       </aside>
 
