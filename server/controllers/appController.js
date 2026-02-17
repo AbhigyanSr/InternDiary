@@ -14,18 +14,23 @@ const getApplications = async (req, res) => {
 const addApplication = async (req, res) => {
   try {
     const { company, role, status, notes, opportunity } = req.body;
-    if (!company || !role || !opportunity) {
-      return res.status(400).json({ message: 'Company, role, and opportunity are required' });
+    if (!company || !role) {
+      return res.status(400).json({ message: 'Company and role are required' });
     }
 
-    const newApp = new Application({
+    const newAppData = {
       user: req.user.id,
       company,
       role,
       status: status || 'applied',
-      notes,
-      opportunity
-    });
+      notes
+    };
+
+    if (opportunity) {
+      newAppData.opportunity = opportunity;
+    }
+
+    const newApp = new Application(newAppData);
 
     await newApp.save();
     res.status(201).json(newApp);

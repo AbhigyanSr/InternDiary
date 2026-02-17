@@ -43,8 +43,22 @@ const toggleTaskStatus = async (req, res) => {
   }
 };
 
+// Delete task
+const deleteTask = async (req, res) => {
+  try {
+    const task = await Task.findOne({ _id: req.params.id, user: req.user.id });
+    if (!task) return res.status(404).json({ message: 'Task not found' });
+
+    await task.deleteOne();
+    res.status(200).json({ message: 'Task deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting task' });
+  }
+};
+
 module.exports = {
   getTasks,
   createTask,
-  toggleTaskStatus
+  toggleTaskStatus,
+  deleteTask
 };

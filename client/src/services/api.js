@@ -17,8 +17,6 @@ export const apiRequest = async (endpoint, method = 'GET', body = null, token = 
     body: body ? JSON.stringify(body) : null,
   });
 
-  const data = await response.json();
-  
   // Handle authentication errors
   if (response.status === 401) {
     console.error('Unauthorized - clearing token');
@@ -27,6 +25,16 @@ export const apiRequest = async (endpoint, method = 'GET', body = null, token = 
     window.location.href = '/login';
     return;
   }
+  
+  // Check if response is JSON
+  const contentType = response.headers.get('content-type');
+  if (!contentType || !contentType.includes('application/json')) {
+    const text = await response.text();
+    console.error('Non-JSON response:', text.substring(0, 200));
+    throw new Error(`Server error: Expected JSON but got ${contentType || 'unknown content type'}`);
+  }
+  
+  const data = await response.json();
   
   if (!response.ok) {
     console.error('API error:', response.status, data.message);

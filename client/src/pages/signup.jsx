@@ -15,33 +15,30 @@ export default function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    setLoading(true);
+    setLoading(false);
 
     // Validation
     if (!name.trim()) {
       setError('Name is required');
-      setLoading(false);
       return;
     }
 
     if (!email.trim()) {
       setError('Email is required');
-      setLoading(false);
       return;
     }
 
     if (password.length < 6) {
       setError('Password must be at least 6 characters');
-      setLoading(false);
       return;
     }
 
     if (password !== confirmPassword) {
       setError('Passwords do not match');
-      setLoading(false);
       return;
     }
 
+    setLoading(true);
     try {
       await register(name, email, password);
       navigate('/dashboard');
@@ -53,50 +50,71 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-xl shadow-lg">
-        <h2 className="text-center text-3xl font-extrabold text-gray-900">Create Account</h2>
+    <div className="auth-page">
+      <div className="card auth-card p-8 space-y-6">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold text-gradient mb-2">InternTrack</h1>
+          <h2 className="text-xl font-semibold">Create your account</h2>
+          <p className="text-muted text-sm mt-1">Start tracking your internship journey</p>
+        </div>
         
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+          <div className="bg-red-900/20 border border-red-900/50 text-red-300 px-4 py-3 rounded-lg text-sm">
             {error}
           </div>
         )}
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="space-y-4">
+        <form className="space-y-4" onSubmit={handleSubmit}>
+          <div>
+            <label htmlFor="name">Full Name</label>
             <input
+              id="name"
               type="text"
               required
-              className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              placeholder="Full Name"
+              className="field"
+              placeholder="John Doe"
               value={name}
               onChange={(e) => setName(e.target.value)}
               disabled={loading}
             />
+          </div>
+
+          <div>
+            <label htmlFor="email">Email address</label>
             <input
+              id="email"
               type="email"
               required
-              className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              placeholder="Email address"
+              className="field"
+              placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={loading}
             />
+          </div>
+
+          <div>
+            <label htmlFor="password">Password</label>
             <input
+              id="password"
               type="password"
               required
-              className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              placeholder="Password"
+              className="field"
+              placeholder="At least 6 characters"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               disabled={loading}
             />
+          </div>
+
+          <div>
+            <label htmlFor="confirmPassword">Confirm Password</label>
             <input
+              id="confirmPassword"
               type="password"
               required
-              className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              placeholder="Confirm Password"
+              className="field"
+              placeholder="Re-enter your password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               disabled={loading}
@@ -105,17 +123,19 @@ export default function Signup() {
 
           <button 
             type="submit" 
-            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400"
+            className="btn-primary w-full py-3"
             disabled={loading}
           >
-            {loading ? 'Signing up...' : 'Sign up'}
+            {loading ? 'Creating account...' : 'Sign up'}
           </button>
         </form>
 
+        <div className="divider"></div>
+
         <div className="text-center">
-          <p className="text-gray-600">
+          <p className="text-muted text-sm">
             Already have an account?{' '}
-            <Link to="/login" className="text-indigo-600 hover:text-indigo-500 font-medium">
+            <Link to="/login" className="text-accent hover:text-accent-hover font-medium">
               Sign in
             </Link>
           </p>

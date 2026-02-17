@@ -2,18 +2,72 @@ SRS Document.pdf
 
 # Dependencies
 node_modules/
+*/node_modules/
 
 # Environment files
 .env
 .env.*
+.env.local
+.env.production
+.env.development
+
+# Build outputs
+client/build/
+client/dist/
+server/build/
+server/dist/
+build/
+dist/
 
 # Logs
 *.log
 logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
 # Uploads
 server/uploads/
 
+# Testing
+coverage/
+.nyc_output/
+
+# Cache
+.npm
+.eslintcache
+.node_repl_history
+
 # OS files
+.DS_Store
 Thumbs.db
 Desktop.ini
+*.swp
+*.swo
+*~
+
+# IDE/Editor files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.project
+.classpath
+.c9/
+*.launch
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Package manager
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Miscellaneous
+.env.backup
+*.pem
+*.key
+.vercel

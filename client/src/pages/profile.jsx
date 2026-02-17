@@ -47,47 +47,56 @@ export default function Profile() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-sm border border-gray-100">
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">Your Profile</h1>
+    <div className="max-w-2xl mx-auto card p-8">
+      <h1 className="text-3xl font-semibold mb-2">Your Profile</h1>
+      <p className="text-muted mb-8">Manage your account and resume</p>
       
       <div className="mb-8">
-        <label className="block text-sm font-medium text-gray-500">Email Address</label>
-        <p className="text-lg font-semibold text-gray-800">{user?.email}</p>
+        <label className="text-sm text-muted mb-1">Email Address</label>
+        <p className="text-lg font-medium">{user?.email}</p>
       </div>
 
-      <hr className="my-6 border-gray-100" />
+      <div className="divider"></div>
 
       <section>
-        <h2 className="text-lg font-bold text-gray-700 mb-4">Resume Management</h2>
+        <h2 className="text-xl font-semibold mb-4">Resume Management</h2>
         
         {resumeUrl ? (
-          <div className="mb-4 p-4 bg-green-50 rounded-lg flex items-center justify-between">
-            <span className="text-green-700 text-sm font-medium">✓ Resume is uploaded</span>
+          <div className="mb-6 p-4 bg-green-900/10 border border-green-900/30 rounded-lg flex items-center justify-between">
+            <span className="text-green-400 text-sm font-medium">✓ Resume is uploaded</span>
             <a 
               href={`http://localhost:5000/${resumeUrl}`} 
-              target="_blank" 
-              className="text-indigo-600 hover:underline text-sm"
+              target="_blank"
+              rel="noopener noreferrer" 
+              className="text-accent hover:text-accent-hover text-sm font-medium"
             >
-              View Current PDF
+              View Current PDF →
             </a>
           </div>
         ) : (
-          <p className="text-sm text-gray-500 mb-4">No resume uploaded yet. Upload a PDF to complete your profile.</p>
+          <p className="text-sm text-muted mb-6">No resume uploaded yet. Upload a PDF to complete your profile.</p>
         )}
 
         <form onSubmit={handleUpload} className="space-y-4">
-          <input 
-            type="file" 
-            accept=".pdf" 
-            onChange={handleFileChange}
-            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
-          />
+          <div>
+            <label className="mb-2">Upload New Resume (PDF)</label>
+            <input 
+              type="file" 
+              accept=".pdf" 
+              onChange={handleFileChange}
+              className="block w-full text-sm text-muted
+                file:mr-4 file:py-2 file:px-4 
+                file:rounded-md file:border-0 
+                file:text-sm file:font-semibold 
+                file:bg-accent/10 file:text-accent 
+                hover:file:bg-accent/20 file:cursor-pointer
+                file:transition"
+            />
+          </div>
           <button 
             type="submit" 
             disabled={uploading}
-            className={`w-full py-2 px-4 rounded-md text-white font-medium transition ${
-              uploading ? 'bg-gray-400' : 'bg-indigo-600 hover:bg-indigo-700'
-            }`}
+            className="btn-primary w-full py-3"
           >
             {uploading ? 'Uploading...' : 'Update Resume'}
           </button>

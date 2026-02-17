@@ -4,7 +4,7 @@ const Opportunity = require('../models/Opportunity');
 // @route   POST /api/jobs
 const createJob = async (req, res) => {
   try {
-    const { company, title, applyLink, deadline } = req.body;
+    const { company, title, applyLink, deadline, description, type } = req.body;
     
     // Optional: If you want admins to upload a specific JD PDF for the job
     const pdfUrl = req.file ? req.file.path : null; 
@@ -18,6 +18,8 @@ const createJob = async (req, res) => {
       title,
       applyLink,
       deadline,
+      description,
+      type,
       pdfUrl,
       postedBy: req.user.id, // Linked to the Admin who created it
     });
@@ -40,6 +42,30 @@ const getJobs = async (req, res) => {
   }
 };
 
+// @desc    Update a job posting (Admin Only)
+// @route   PUT /api/jobs/:id
+const updateJob = async (req, res) => {
+  try {
+    const { company, title, applyLink, deadline, description, type } = req.body;
+    
+    const job = await Opportunity.findById(req.params.id);
+    if (!job) return res.status(404).json({ message: 'Job not found' });
+
+    // Update fields
+    job.company = company || job.company;
+    job.title = title || job.title;
+    job.applyLink = applyLink || job.applyLink;
+    job.deadline = deadline || job.deadline;
+    job.description = description || job.description;
+    job.type = type || job.type;
+
+    const updatedJob = await job.save();
+    res.json(updatedJob);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // @desc    Delete a job posting (Admin Only)
 // @route   DELETE /api/jobs/:id
 const deleteJob = async (req, res) => {
@@ -54,4 +80,4 @@ const deleteJob = async (req, res) => {
   }
 };
 
-module.exports = { createJob, getJobs, deleteJob };
+module.exports = { createJob, getJobs, updateJob, deleteJob };

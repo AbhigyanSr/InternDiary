@@ -1,27 +1,38 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { apiRequest } from '../services/api';
 
 export default function AdminDashboard() {
   const [formData, setFormData] = useState({
     company: '',
     title: '',
+    description: '',
     applyLink: '',
-    deadline: ''
+    deadline: '',
+    type: 'Internship'
   });
   const [error, setError] = useState('');
+  const [jobs, setJobs] = useState([]);
+  const [loadingJobs, setLoadingJobs] = useState(true);
+  const [editingId, setEditingId] = useState(null);
+
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const data = await apiRequest('/jobs', 'GET', null, token);
+        setJobs(data || []);
+      } catch (err) {
+        console.error('Failed to load jobs', err);
+      } finally {
+        setLoadingJobs(false);
+      }
+    };
+    fetchJobs();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    
-    // Debug: Log what's in formData
-    console.log('Form Data:', formData);
-    console.log('Trimmed values:', {
-      company: formData.company.trim(),
-      title: formData.title.trim(),
-      applyLink: formData.applyLink.trim(),
-      deadline: formData.deadline.trim()
-    });
     
     // Validate all fields (trim whitespace for strings)
     if (!formData.company.trim() || !formData.title.trim() || !formData.applyLink.trim() || !formData.deadline.trim()) {
@@ -36,7 +47,6 @@ export default function AdminDashboard() {
     }
 
     const token = localStorage.getItem('token');
-    console.log('Token from localStorage:', token ? token.substring(0, 20) + '...' : 'NO TOKEN FOUND');
     
     if (!token) {
       setError('No authentication token found. Please log in again.');
@@ -44,59 +54,212 @@ export default function AdminDashboard() {
     }
     
     try {
-      await apiRequest('/jobs', 'POST', formData, token);
-      alert("Internship posted successfully!");
-      setFormData({ company: '', title: '', applyLink: '', deadline: '' });
+      if (editingId) {
+        // Update existing job
+        const updatedJob = await apiRequest(`/jobs/${editingId}`, 'PUT', formData, token);
+        alert("Opportunity updated successfully!");
+        setJobs(prev => prev.map(job => job._id === editingId ? updatedJob : job));
+        setEditingId(null);
+      } else {
+        // Create new job
+        const newJob = await apiRequest('/jobs', 'POST', formData, token);
+        alert("Opportunity posted successfully!");
+        setJobs(prev => [newJob, ...prev]);
+      }
+      setFormData({ company: '', title: '', description: '', applyLink: '', deadline: '', type: 'Internship' });
     } catch (err) {
-      setError(err.message || "Failed to post job");
+      setError(err.message || `Failed to ${editingId ? 'update' : 'post'} job`);
+    }
+  };
+
+  const handleEdit = (job) => {
+    setFormData({
+      company: job.company,
+      title: job.title,
+      description: job.description || '',
+      applyLink: job.applyLink,
+      deadline: job.deadline ? job.deadline.split('T')[0] : '',
+      type: job.type || 'Internship'
+    });
+    setEditingId(job._id);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    setFormData({ company: '', title: '', description: '', applyLink: '', deadline: '', type: 'Internship' });
+    setError('');
+  };
+
+  const handleDelete = async (jobId) => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setError('No authentication token found. Please log in again.');
+      return;
+    }
+    if (!window.confirm('Delete this internship? This cannot be undone.')) {
+      return;
+    }
+    try {
+      await apiRequest(`/jobs/${jobId}`, 'DELETE', null, token);
+      setJobs(prev => prev.filter(job => job._id !== jobId));
+    } catch (err) {
+      setError(err.message || 'Failed to delete job');
     }
   };
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <h1 className="text-3xl font-bold mb-8">Admin: Post Internship</h1>
+    <div className="max-w-5xl mx-auto space-y-8">
+      <div>
+        <h1 className="text-3xl font-semibold mb-1">{editingId ? 'Edit Opportunity' : 'Admin: Post Opportunity'}</h1>
+        <p className="text-muted">{editingId ? 'Update opportunity details' : 'Create new internships, hackathons, and webinars'}</p>
+      </div>
+      
       {error && (
-        <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+        <div className="p-4 bg-red-900/20 border border-red-900/50 text-red-300 rounded-lg text-sm">
           {error}
         </div>
       )}
-      <form onSubmit={handleSubmit} className="bg-white p-8 rounded-xl shadow-sm space-y-4 border border-gray-100">
+      
+      <form onSubmit={handleSubmit} className="card p-8 space-y-5">
         <div>
-          <label className="block text-sm font-medium text-gray-700">Company Name</label>
-          <input 
-            type="text" required className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          <label htmlFor="company">Company Name</label>
+          <input
+            id="company"
+            type="text" 
+            required 
+            className="field"
             value={formData.company}
             onChange={(e) => setFormData({...formData, company: e.target.value})}
+            placeholder="e.g. Google"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700">Job Title</label>
-          <input 
-            type="text" required placeholder="e.g. SDE Intern" className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          <label htmlFor="title">Job Title</label>
+          <input
+            id="title" 
+            type="text" 
+            required 
+            placeholder="e.g. SDE Intern" 
+            className="field"
             value={formData.title}
             onChange={(e) => setFormData({...formData, title: e.target.value})}
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700">Application Link</label>
-          <input 
-            type="url" required className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-            value={formData.applyLink}
-            onChange={(e) => setFormData({...formData, applyLink: e.target.value})}
+          <label htmlFor="description">Job Description</label>
+          <textarea
+            id="description"
+            rows={4}
+            className="field"
+            placeholder="Key responsibilities, requirements, and details..."
+            value={formData.description}
+            onChange={(e) => setFormData({...formData, description: e.target.value})}
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700">Last Date to Apply</label>
-          <input 
-            type="date" required className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          <label htmlFor="applyLink">Application Link</label>
+          <input
+            id="applyLink" 
+            type="url" 
+            required 
+            className="field"
+            value={formData.applyLink}
+            onChange={(e) => setFormData({...formData, applyLink: e.target.value})}
+            placeholder="https://..."
+          />
+        </div>
+        <div>
+          <label htmlFor="deadline">Last Date to Apply</label>
+          <input
+            id="deadline" 
+            type="date" 
+            required 
+            className="field"
             value={formData.deadline}
             onChange={(e) => setFormData({...formData, deadline: e.target.value})}
           />
         </div>
-        <button type="submit" className="w-full bg-indigo-600 text-white py-3 rounded-lg font-bold hover:bg-indigo-700 transition">
-          Post Internship
-        </button>
+        <div>
+          <label htmlFor="type">Opportunity Type</label>
+          <select
+            id="type"
+            className="field"
+            value={formData.type}
+            onChange={(e) => setFormData({...formData, type: e.target.value})}
+          >
+            <option value="Internship">Internship</option>
+            <option value="Hackathon">Hackathon</option>
+            <option value="Webinar">Webinar</option>
+          </select>
+        </div>
+        <div className="flex gap-3">
+          <button type="submit" className="btn-primary flex-1 py-3">
+            {editingId ? 'Update Opportunity' : 'Post Opportunity'}
+          </button>
+          {editingId && (
+            <button 
+              type="button" 
+              onClick={handleCancelEdit}
+              className="btn-outline px-6 py-3"
+            >
+              Cancel
+            </button>
+          )}
+        </div>
       </form>
+
+      <section className="space-y-4">
+        <h2 className="text-2xl font-semibold">Manage Opportunities</h2>
+        {loadingJobs ? (
+          <div className="text-center py-8">
+            <div className="loading-spinner mx-auto mb-3"></div>
+            <p className="text-muted">Loading opportunities...</p>
+          </div>
+        ) : jobs.length === 0 ? (
+          <div className="card p-12 text-center">
+            <p className="text-muted">No internships posted yet. Create your first one above!</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {jobs.map(job => (
+              <div
+                key={job._id}
+                className="card p-5 flex flex-col md:flex-row md:items-start md:justify-between gap-4"
+              >
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold mb-1">{job.title}</h3>
+                  <p className="text-muted text-sm mb-2">{job.company}</p>
+                  <div className="flex gap-2">
+                    <span className="chip text-xs">
+                      {job.type || 'Internship'}
+                    </span>
+                    <span className="chip chip-neutral text-xs">
+                      Deadline: {new Date(job.deadline).toLocaleDateString()}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleEdit(job)}
+                    className="btn-outline px-4 py-2 text-sm"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleDelete(job._id)}
+                    className="btn-outline text-red-400 border-red-400 hover:bg-red-900/20 px-4 py-2 text-sm"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
     </div>
   );
 }

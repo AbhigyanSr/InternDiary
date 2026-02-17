@@ -8,7 +8,7 @@ const applicationSchema = new mongoose.Schema({
   opportunity: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Opportunity',
-    required: true,
+    required: false,
   },
   status: {
     type: String,
@@ -19,6 +19,14 @@ const applicationSchema = new mongoose.Schema({
   notes: { type: String }
 }, { timestamps: true });
 
-applicationSchema.index({ user: 1, opportunity: 1 }, { unique: true });
+applicationSchema.index(
+  { user: 1, opportunity: 1 },
+  {
+    unique: true,
+    partialFilterExpression: {
+      opportunity: { $exists: true, $ne: null }
+    }
+  }
+);
 
 module.exports = mongoose.model('Application', applicationSchema);
