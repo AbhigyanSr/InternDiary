@@ -58,8 +58,10 @@ export default function Layout() {
           )}
         </nav>
         
+        <div className="flex-1"></div>
+        
         {/* User info and logout */}
-        <div className="mt-auto pt-6" style={{ borderTop: '1px solid var(--border-separator)', marginTop: '3rem' }}>
+        <div className="pt-6" style={{ borderTop: '1px solid var(--border-separator)' }}>
           <div className="px-3 mb-3">
             <p className="text-sm font-medium text-primary">{user?.name}</p>
             <p className="text-xs text-muted">{user?.email}</p>
@@ -73,7 +75,7 @@ export default function Layout() {
         </div>
         
         {/* Footer */}
-        <div className="pt-4 mt-4 text-center" style={{ borderTop: '1px solid var(--border-separator)' }}>
+        <div className="pt-4 text-center" style={{ borderTop: '1px solid var(--border-separator)' }}>
           <p className="text-xs text-muted opacity-40">Made by Abhigyan Srivastava</p>
         </div>
       </aside>
