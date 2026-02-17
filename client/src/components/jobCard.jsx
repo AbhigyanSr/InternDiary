@@ -65,7 +65,7 @@ export default function JobCard({ job, onApply, isApplied }) {
               }}
               className="btn-outline text-xs px-4 py-2"
             >
-              Track
+              Applied?
             </button>
           )}
         </div>

@@ -71,6 +71,11 @@ export default function Layout() {
             Logout
           </button>
         </div>
+        
+        {/* Watermark */}
+        <div className="px-3 pt-4 pb-2">
+          <p className="text-xs text-muted opacity-50">Made by Abhigyan Srivastava</p>
+        </div>
       </aside>
 
       {/* Main Content Area */}
