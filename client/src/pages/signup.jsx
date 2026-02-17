@@ -53,7 +53,7 @@ export default function Signup() {
     <div className="auth-page">
       <div className="card auth-card p-8 space-y-6">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-gradient mb-2">InternTrack</h1>
+          <h1 className="text-3xl font-bold text-gradient mb-2">Intern Diary</h1>
           <h2 className="text-xl font-semibold">Create your account</h2>
           <p className="text-muted text-sm mt-1">Start tracking your internship journey</p>
         </div>

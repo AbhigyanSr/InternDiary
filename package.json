@@ -1,5 +1,5 @@
 {
-  "name": "internship-project",
+  "name": "intern-diary",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -7,5 +7,5 @@
   },
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "A comprehensive platform for managing internship applications, tasks, and opportunities"
 }

@@ -1,7 +1,7 @@
-# InternTrack Premium Dark Theme Guide
+# Intern Diary Premium Dark Theme Guide
 
 ## Overview
-A modern, minimal, premium dark theme for the InternTrack dashboard with clean aesthetics and excellent readability.
+A modern, minimal, premium dark theme for the Intern Diary dashboard with clean aesthetics and excellent readability.
 
 ## Color System
 

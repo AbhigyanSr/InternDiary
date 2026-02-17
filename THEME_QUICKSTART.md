@@ -1,8 +1,8 @@
-# InternTrack Dark Theme - Quick Start
+# Intern Diary Dark Theme - Quick Start
 
 ## What's Been Implemented
 
-A complete premium dark theme has been applied across the entire InternTrack application with:
+A complete premium dark theme has been applied across the entire Intern Diary application with:
 
 ### ✅ Core Theme System
 - **CSS Custom Properties** for easy customization

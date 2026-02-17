@@ -1,5 +1,5 @@
 {
-  "name": "server",
+  "name": "intern-diary-server",
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
@@ -9,7 +9,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "Backend API for Intern Diary application",
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
