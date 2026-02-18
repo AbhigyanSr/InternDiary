@@ -271,6 +271,13 @@ a.btn-primary:visited {
   font-weight: 400;
 }
 
+.field-with-icons {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  padding-left: 3rem;
+  padding-right: 3rem;
+}
+
 .field::placeholder {
   color: var(--text-secondary);
   opacity: 0.6;

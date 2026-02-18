@@ -247,8 +247,7 @@ export default function Applications() {
             placeholder="Search applications by company, role, status, or notes..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="field pl-12 pr-12 w-full text-sm"
-            style={{ paddingTop: '0.75rem', paddingBottom: '0.75rem' }}
+            className="field field-with-icons w-full text-sm"
           />
           {searchQuery && (
             <button
