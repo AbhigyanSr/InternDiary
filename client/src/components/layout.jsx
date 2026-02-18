@@ -116,7 +116,18 @@ export default function Layout() {
       <main className="flex-1 overflow-y-auto">
         {/* Mobile Header */}
         <header className="card md:hidden flex justify-between items-center p-4 m-4 mb-0">
-          <h1 className="font-bold text-gradient">Intern Diary</h1>
+          <div className="flex flex-col items-start gap-2">
+            <button
+              type="button"
+              className="bg-surface border border-border rounded-full w-8 h-8 flex flex-col items-center justify-center gap-1 hover:bg-surface-hover transition-colors"
+              aria-label="Open menu"
+            >
+              <span className="w-4 h-0.5 bg-muted rounded"></span>
+              <span className="w-4 h-0.5 bg-muted rounded"></span>
+              <span className="w-4 h-0.5 bg-muted rounded"></span>
+            </button>
+            <h1 className="font-bold text-gradient">Intern Diary</h1>
+          </div>
           <span className="text-xs text-muted">{user?.name}</span>
         </header>
         
