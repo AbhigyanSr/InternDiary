@@ -18,7 +18,7 @@ const SidebarItem = ({ to, label, icon, isCollapsed }) => {
   return (
     <Link
       to={to}
-      className={`sidebar-item ${isActive ? 'sidebar-item-active' : ''} ${isCollapsed ? 'justify-center' : ''}`}
+      className={`sidebar-item ${isActive ? 'sidebar-item-active' : ''} ${isCollapsed ? 'justify-center text-xs px-2' : ''}`}
       title={isCollapsed ? label : ''}
     >
       {isCollapsed ? getAbbreviation(label) : label}
@@ -46,20 +46,20 @@ export default function Layout() {
   return (
     <div className="app-shell flex min-h-screen">
       {/* Sidebar */}
-      <aside className={`sidebar ${isSidebarCollapsed ? 'w-20' : 'w-64'} p-6 hidden md:flex flex-col transition-all duration-300 relative`}>
+      <aside className={`sidebar ${isSidebarCollapsed ? 'w-20 px-2' : 'w-64 px-6'} py-6 hidden md:flex flex-col transition-all duration-300 relative`}>
         {/* Toggle Button */}
         <button
           onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-          className="absolute -right-3 top-6 bg-surface border border-border rounded-full w-8 h-8 flex flex-col items-center justify-center gap-1 hover:bg-surface-hover transition-colors z-10 p-1.5"
+          className="absolute -right-3 top-6 bg-surface border border-border rounded-full w-6 h-6 flex flex-col items-center justify-center gap-0.5 hover:bg-surface-hover transition-colors z-10"
           title={isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
-          <span className="w-4 h-0.5 bg-muted rounded transition-all"></span>
-          <span className="w-4 h-0.5 bg-muted rounded transition-all"></span>
-          <span className="w-4 h-0.5 bg-muted rounded transition-all"></span>
+          <span className="w-3 h-0.5 bg-muted rounded transition-all"></span>
+          <span className="w-3 h-0.5 bg-muted rounded transition-all"></span>
+          <span className="w-3 h-0.5 bg-muted rounded transition-all"></span>
         </button>
 
-        <div className="mb-10">
-          <h1 className={`text-2xl font-bold text-gradient ${isSidebarCollapsed ? 'text-center' : ''}`}>
+        <div className={`mb-10 ${isSidebarCollapsed ? 'flex items-center justify-center' : ''}`}>
+          <h1 className={`text-2xl font-bold text-gradient ${isSidebarCollapsed ? 'text-center text-lg' : ''}`}>
             {isSidebarCollapsed ? 'ID' : 'Intern Diary'}
           </h1>
           {!isSidebarCollapsed && <p className="text-xs text-muted mt-1">Track your journey</p>}
@@ -97,7 +97,7 @@ export default function Layout() {
           )}
           <button 
             onClick={logout}
-            className={`w-full text-left px-3 py-2 text-sm text-muted hover:text-red-400 hover:bg-red-900/10 rounded-md transition ${isSidebarCollapsed ? 'text-center' : ''}`}
+            className={`w-full text-left px-3 py-2 text-sm text-muted hover:text-red-400 hover:bg-red-900/10 rounded-md transition ${isSidebarCollapsed ? 'text-center px-1 text-lg' : ''}`}
             title="Logout"
           >
             {isSidebarCollapsed ? '⏻' : 'Logout'}
