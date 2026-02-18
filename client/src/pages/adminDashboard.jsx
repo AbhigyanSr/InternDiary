@@ -30,6 +30,13 @@ export default function AdminDashboard() {
     fetchJobs();
   }, []);
 
+  const toLocalDateTimeInput = (value) => {
+    if (!value) return '';
+    const date = new Date(value);
+    const offsetMs = date.getTimezoneOffset() * 60 * 1000;
+    return new Date(date.getTime() - offsetMs).toISOString().slice(0, 16);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -40,7 +47,7 @@ export default function AdminDashboard() {
       if (!formData.company.trim()) missing.push('Company Name');
       if (!formData.title.trim()) missing.push('Job Title');
       if (!formData.applyLink.trim()) missing.push('Application Link');
-      if (!formData.deadline.trim()) missing.push('Last Date to Apply');
+      if (!formData.deadline.trim()) missing.push('Available Until');
       
       setError(`Please fill all required fields: ${missing.join(', ')}`);
       return;
@@ -78,7 +85,7 @@ export default function AdminDashboard() {
       title: job.title,
       description: job.description || '',
       applyLink: job.applyLink,
-      deadline: job.deadline ? job.deadline.split('T')[0] : '',
+      deadline: toLocalDateTimeInput(job.deadline),
       type: job.type || 'Internship'
     });
     setEditingId(job._id);
@@ -170,10 +177,10 @@ export default function AdminDashboard() {
           />
         </div>
         <div>
-          <label htmlFor="deadline">Last Date to Apply</label>
+          <label htmlFor="deadline">Available Until (Date & Time)</label>
           <input
             id="deadline" 
-            type="date" 
+            type="datetime-local" 
             required 
             className="field"
             value={formData.deadline}
@@ -235,7 +242,7 @@ export default function AdminDashboard() {
                       {job.type || 'Internship'}
                     </span>
                     <span className="chip chip-neutral text-xs">
-                      Deadline: {new Date(job.deadline).toLocaleDateString()}
+                      Available Until: {new Date(job.deadline).toLocaleString()}
                     </span>
                   </div>
                 </div>

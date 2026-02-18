@@ -156,13 +156,13 @@ export default function Dashboard() {
             <div className="flex-1 h-px bg-border-subtle"></div>
           </div>
           <p className="text-sm text-muted text-center mb-6">
-            These opportunities have passed their deadline and you didn't apply. Review them for future reference.
+            These opportunities have passed their availability time and you didn't apply. Review them for future reference.
           </p>
           <div className="dashboard-grid opacity-60">
             {missedJobs.map(job => (
               <div key={job._id} className="relative">
                 <div className="absolute inset-0 bg-black/30 backdrop-blur-[1px] z-10 rounded-xl flex items-center justify-center">
-                  <span className="chip chip-danger text-xs font-semibold">Deadline Passed</span>
+                  <span className="chip chip-danger text-xs font-semibold">Time Passed</span>
                 </div>
                 <JobCard 
                   job={job} 

@@ -35,7 +35,12 @@ export default function JobCard({ job, onApply, isApplied }) {
                 {job.type || 'Internship'}
               </span>
               <span className="chip chip-neutral text-xs">
-                {new Date(job.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                {new Date(job.deadline).toLocaleString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  hour: 'numeric',
+                  minute: '2-digit'
+                })}
               </span>
             </div>
             <h3 className="text-lg font-semibold mb-1">{job.title || job.role}</h3>
@@ -115,10 +120,12 @@ export default function JobCard({ job, onApply, isApplied }) {
 
               <div className="flex flex-wrap items-center gap-3 pt-2">
                 <span className="chip">
-                  Deadline: {new Date(job.deadline).toLocaleDateString('en-US', { 
+                  Available Until: {new Date(job.deadline).toLocaleString('en-US', { 
                     month: 'short', 
                     day: 'numeric', 
-                    year: 'numeric' 
+                    year: 'numeric',
+                    hour: 'numeric',
+                    minute: '2-digit'
                   })}
                 </span>
                 <a 
