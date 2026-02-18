@@ -7,7 +7,8 @@ export default function AdminDashboard() {
     title: '',
     description: '',
     applyLink: '',
-    deadline: '',
+    deadlineDate: '',
+    deadlineTime: '',
     type: 'Internship'
   });
   const [error, setError] = useState('');
@@ -30,11 +31,15 @@ export default function AdminDashboard() {
     fetchJobs();
   }, []);
 
-  const toLocalDateTimeInput = (value) => {
-    if (!value) return '';
+  const toLocalDateTimeParts = (value) => {
+    if (!value) return { deadlineDate: '', deadlineTime: '' };
     const date = new Date(value);
     const offsetMs = date.getTimezoneOffset() * 60 * 1000;
-    return new Date(date.getTime() - offsetMs).toISOString().slice(0, 16);
+    const localIso = new Date(date.getTime() - offsetMs).toISOString();
+    return {
+      deadlineDate: localIso.slice(0, 10),
+      deadlineTime: localIso.slice(11, 16)
+    };
   };
 
   const handleSubmit = async (e) => {
@@ -42,16 +47,19 @@ export default function AdminDashboard() {
     setError('');
     
     // Validate all fields (trim whitespace for strings)
-    if (!formData.company.trim() || !formData.title.trim() || !formData.applyLink.trim() || !formData.deadline.trim()) {
+    if (!formData.company.trim() || !formData.title.trim() || !formData.applyLink.trim() || !formData.deadlineDate.trim() || !formData.deadlineTime.trim()) {
       const missing = [];
       if (!formData.company.trim()) missing.push('Company Name');
       if (!formData.title.trim()) missing.push('Job Title');
       if (!formData.applyLink.trim()) missing.push('Application Link');
-      if (!formData.deadline.trim()) missing.push('Available Until');
+      if (!formData.deadlineDate.trim()) missing.push('Available Until Date');
+      if (!formData.deadlineTime.trim()) missing.push('Available Until Time');
       
       setError(`Please fill all required fields: ${missing.join(', ')}`);
       return;
     }
+
+    const combinedDeadline = `${formData.deadlineDate}T${formData.deadlineTime}`;
 
     const token = localStorage.getItem('token');
     
@@ -63,29 +71,49 @@ export default function AdminDashboard() {
     try {
       if (editingId) {
         // Update existing job
-        const updatedJob = await apiRequest(`/jobs/${editingId}`, 'PUT', formData, token);
+        const updatedJob = await apiRequest(
+          `/jobs/${editingId}`,
+          'PUT',
+          { ...formData, deadline: combinedDeadline },
+          token
+        );
         alert("Opportunity updated successfully!");
         setJobs(prev => prev.map(job => job._id === editingId ? updatedJob : job));
         setEditingId(null);
       } else {
         // Create new job
-        const newJob = await apiRequest('/jobs', 'POST', formData, token);
+        const newJob = await apiRequest(
+          '/jobs',
+          'POST',
+          { ...formData, deadline: combinedDeadline },
+          token
+        );
         alert("Opportunity posted successfully!");
         setJobs(prev => [newJob, ...prev]);
       }
-      setFormData({ company: '', title: '', description: '', applyLink: '', deadline: '', type: 'Internship' });
+      setFormData({
+        company: '',
+        title: '',
+        description: '',
+        applyLink: '',
+        deadlineDate: '',
+        deadlineTime: '',
+        type: 'Internship'
+      });
     } catch (err) {
       setError(err.message || `Failed to ${editingId ? 'update' : 'post'} job`);
     }
   };
 
   const handleEdit = (job) => {
+    const { deadlineDate, deadlineTime } = toLocalDateTimeParts(job.deadline);
     setFormData({
       company: job.company,
       title: job.title,
       description: job.description || '',
       applyLink: job.applyLink,
-      deadline: toLocalDateTimeInput(job.deadline),
+      deadlineDate,
+      deadlineTime,
       type: job.type || 'Internship'
     });
     setEditingId(job._id);
@@ -94,7 +122,15 @@ export default function AdminDashboard() {
 
   const handleCancelEdit = () => {
     setEditingId(null);
-    setFormData({ company: '', title: '', description: '', applyLink: '', deadline: '', type: 'Internship' });
+    setFormData({
+      company: '',
+      title: '',
+      description: '',
+      applyLink: '',
+      deadlineDate: '',
+      deadlineTime: '',
+      type: 'Internship'
+    });
     setError('');
   };
 
@@ -177,15 +213,25 @@ export default function AdminDashboard() {
           />
         </div>
         <div>
-          <label htmlFor="deadline">Available Until (Date & Time)</label>
-          <input
-            id="deadline" 
-            type="datetime-local" 
-            required 
-            className="field"
-            value={formData.deadline}
-            onChange={(e) => setFormData({...formData, deadline: e.target.value})}
-          />
+          <label>Available Until</label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <input
+              id="deadlineDate" 
+              type="date" 
+              required 
+              className="field"
+              value={formData.deadlineDate}
+              onChange={(e) => setFormData({ ...formData, deadlineDate: e.target.value })}
+            />
+            <input
+              id="deadlineTime" 
+              type="time" 
+              required 
+              className="field"
+              value={formData.deadlineTime}
+              onChange={(e) => setFormData({ ...formData, deadlineTime: e.target.value })}
+            />
+          </div>
         </div>
         <div>
           <label htmlFor="type">Opportunity Type</label>
