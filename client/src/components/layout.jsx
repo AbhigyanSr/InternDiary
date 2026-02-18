@@ -46,7 +46,7 @@ export default function Layout() {
   return (
     <div className="app-shell flex min-h-screen">
       {/* Sidebar */}
-      <aside className={`sidebar ${isSidebarCollapsed ? 'w-20 px-2' : 'w-64 px-6'} py-6 hidden md:flex flex-col transition-all duration-300 relative`}>
+      <aside className={`sidebar ${isSidebarCollapsed ? 'w-20 px-2' : 'w-64 px-6'} py-6 hidden md:flex flex-col transition-all duration-300 relative sticky top-0 h-screen`}>
         {/* Toggle Button */}
         <button
           onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
@@ -113,7 +113,7 @@ export default function Layout() {
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 overflow-y-auto">
+      <main className="flex-1 overflow-y-auto min-h-0">
         {/* Mobile Header */}
         <header className="card md:hidden flex justify-between items-center p-4 m-4 mb-0">
           <div className="flex flex-col items-start gap-2">

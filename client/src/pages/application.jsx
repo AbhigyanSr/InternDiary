@@ -4,6 +4,7 @@ import { apiRequest } from '../services/api.js';
 export default function Applications() {
   const [apps, setApps] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
   const [formData, setFormData] = useState({
     company: '',
     role: '',
@@ -117,6 +118,22 @@ export default function Applications() {
       (app.notes || '').toLowerCase().includes(query)
     );
   });
+
+  const pageSize = 25;
+  const totalPages = Math.max(1, Math.ceil(filteredApps.length / pageSize));
+  const safePage = Math.min(currentPage, totalPages);
+  const startIndex = (safePage - 1) * pageSize;
+  const pagedApps = filteredApps.slice(startIndex, startIndex + pageSize);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
@@ -279,8 +296,8 @@ export default function Applications() {
             </tr>
           </thead>
           <tbody>
-            {filteredApps.length > 0 ? (
-              filteredApps.map((app) => (
+            {pagedApps.length > 0 ? (
+              pagedApps.map((app) => (
                 <tr
                   key={app._id}
                   className="table-row cursor-pointer"
@@ -313,6 +330,37 @@ export default function Applications() {
           </tbody>
         </table>
       </div>
+
+      {filteredApps.length > 0 && (
+        <div className="flex items-center justify-between">
+          <p className="text-xs text-muted">
+            Showing {startIndex + 1}-{Math.min(startIndex + pageSize, filteredApps.length)} of {filteredApps.length}
+          </p>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+              disabled={safePage === 1}
+              className="btn-secondary"
+              aria-label="Previous page"
+            >
+              ←
+            </button>
+            <span className="text-xs text-muted">
+              Page {safePage} of {totalPages}
+            </span>
+            <button
+              type="button"
+              onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+              disabled={safePage === totalPages}
+              className="btn-secondary"
+              aria-label="Next page"
+            >
+              →
+            </button>
+          </div>
+        </div>
+      )}
 
       {editingApp && (
         <div

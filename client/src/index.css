@@ -104,6 +104,8 @@ a.btn-primary:visited {
   background: var(--bg-page);
   color: var(--text-primary);
   min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .sidebar {
