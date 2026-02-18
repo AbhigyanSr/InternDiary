@@ -50,10 +50,12 @@ export default function Layout() {
         {/* Toggle Button */}
         <button
           onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-          className="absolute -right-3 top-6 bg-surface border border-border rounded-full w-6 h-6 flex items-center justify-center hover:bg-surface-hover transition-colors z-10"
+          className="absolute -right-3 top-6 bg-surface border border-border rounded-full w-8 h-8 flex flex-col items-center justify-center gap-1 hover:bg-surface-hover transition-colors z-10 p-1.5"
           title={isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
-          <span className="text-xs text-muted">{isSidebarCollapsed ? '›' : '‹'}</span>
+          <span className="w-4 h-0.5 bg-muted rounded transition-all"></span>
+          <span className="w-4 h-0.5 bg-muted rounded transition-all"></span>
+          <span className="w-4 h-0.5 bg-muted rounded transition-all"></span>
         </button>
 
         <div className="mb-10">
