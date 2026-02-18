@@ -113,7 +113,7 @@ export default function Layout() {
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 overflow-y-auto min-h-0">
+      <main className="flex-1">
         {/* Mobile Header */}
         <header className="card md:hidden flex justify-between items-center p-4 m-4 mb-0">
           <div className="flex flex-col items-start gap-2">
