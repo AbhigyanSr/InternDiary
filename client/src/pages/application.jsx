@@ -3,6 +3,7 @@ import { apiRequest } from '../services/api.js';
 
 export default function Applications() {
   const [apps, setApps] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const [formData, setFormData] = useState({
     company: '',
     role: '',
@@ -104,6 +105,18 @@ export default function Applications() {
       setUpdating(false);
     }
   };
+
+  // Filter applications based on search query
+  const filteredApps = apps.filter(app => {
+    if (!searchQuery.trim()) return true;
+    const query = searchQuery.toLowerCase();
+    return (
+      app.company.toLowerCase().includes(query) ||
+      app.role.toLowerCase().includes(query) ||
+      (app.status || '').toLowerCase().includes(query) ||
+      (app.notes || '').toLowerCase().includes(query)
+    );
+  });
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
@@ -211,6 +224,43 @@ export default function Applications() {
           </div>
         </form>
       )}
+
+      {/* Search Bar */}
+      <div className="card p-4">
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="Search applications by company, role, status, or notes..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="field pl-10 w-full"
+          />
+          <svg
+            className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted pointer-events-none"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
+          </svg>
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => setSearchQuery('')}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted hover:text-primary transition"
+              aria-label="Clear search"
+            >
+              ✕
+            </button>
+          )}
+        </div>
+      </div>
       
       <div className="card overflow-hidden">
         <table className="table">
@@ -222,29 +272,37 @@ export default function Applications() {
             </tr>
           </thead>
           <tbody>
-            {apps.map((app) => (
-              <tr
-                key={app._id}
-                className="table-row cursor-pointer"
-                onClick={() => startEdit(app)}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(event) => {
-                  if (event.key === 'Enter' || event.key === ' ') {
-                    event.preventDefault();
-                    startEdit(app);
-                  }
-                }}
-              >
-                <td className="font-semibold">{app.company}</td>
-                <td className="text-muted">{app.role}</td>
-                <td>
-                  <span className={`chip ${getStatusColor(app.status)}`}>
-                    {getStatusLabel(app.status)}
-                  </span>
+            {filteredApps.length > 0 ? (
+              filteredApps.map((app) => (
+                <tr
+                  key={app._id}
+                  className="table-row cursor-pointer"
+                  onClick={() => startEdit(app)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault();
+                      startEdit(app);
+                    }
+                  }}
+                >
+                  <td className="font-semibold">{app.company}</td>
+                  <td className="text-muted">{app.role}</td>
+                  <td>
+                    <span className={`chip ${getStatusColor(app.status)}`}>
+                      {getStatusLabel(app.status)}
+                    </span>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="3" className="text-center text-muted py-8">
+                  {searchQuery ? `No applications found matching "${searchQuery}"` : 'No applications yet. Add your first opportunity!'}
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
