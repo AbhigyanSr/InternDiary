@@ -59,7 +59,14 @@ export default function AdminDashboard() {
       return;
     }
 
-    const combinedDeadline = `${formData.deadlineDate}T${formData.deadlineTime}`;
+    const deadlineLocal = new Date(`${formData.deadlineDate}T${formData.deadlineTime}`);
+    if (Number.isNaN(deadlineLocal.getTime())) {
+      setError('Invalid availability date/time. Please recheck your entries.');
+      return;
+    }
+
+    const { deadlineDate, deadlineTime, ...restForm } = formData;
+    const payload = { ...restForm, deadline: deadlineLocal.toISOString() };
 
     const token = localStorage.getItem('token');
     
@@ -71,23 +78,13 @@ export default function AdminDashboard() {
     try {
       if (editingId) {
         // Update existing job
-        const updatedJob = await apiRequest(
-          `/jobs/${editingId}`,
-          'PUT',
-          { ...formData, deadline: combinedDeadline },
-          token
-        );
+        const updatedJob = await apiRequest(`/jobs/${editingId}`, 'PUT', payload, token);
         alert("Opportunity updated successfully!");
         setJobs(prev => prev.map(job => job._id === editingId ? updatedJob : job));
         setEditingId(null);
       } else {
         // Create new job
-        const newJob = await apiRequest(
-          '/jobs',
-          'POST',
-          { ...formData, deadline: combinedDeadline },
-          token
-        );
+        const newJob = await apiRequest('/jobs', 'POST', payload, token);
         alert("Opportunity posted successfully!");
         setJobs(prev => [newJob, ...prev]);
       }
