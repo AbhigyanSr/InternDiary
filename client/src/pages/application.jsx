@@ -226,17 +226,10 @@ export default function Applications() {
       )}
 
       {/* Search Bar */}
-      <div className="card p-4">
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="Search applications by company, role, status, or notes..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="field pl-10 w-full"
-          />
+      <div className="relative max-w-2xl mx-auto">
+        <div className="relative group">
           <svg
-            className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted pointer-events-none"
+            className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted pointer-events-none transition-colors group-focus-within:text-accent"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -249,17 +242,32 @@ export default function Applications() {
               d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
             />
           </svg>
+          <input
+            type="text"
+            placeholder="Search applications by company, role, status, or notes..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="field pl-12 pr-12 w-full text-sm"
+            style={{ paddingTop: '0.75rem', paddingBottom: '0.75rem' }}
+          />
           {searchQuery && (
             <button
               type="button"
               onClick={() => setSearchQuery('')}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted hover:text-primary transition"
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 w-6 h-6 flex items-center justify-center rounded-full text-muted hover:text-primary hover:bg-white/5 transition-all duration-200"
               aria-label="Clear search"
             >
-              ✕
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
             </button>
           )}
         </div>
+        {searchQuery && (
+          <div className="absolute top-full left-0 right-0 mt-2 px-4 py-2 text-xs text-muted flex items-center gap-2">
+            <span>Found {filteredApps.length} {filteredApps.length === 1 ? 'result' : 'results'}</span>
+          </div>
+        )}
       </div>
       
       <div className="card overflow-hidden">
