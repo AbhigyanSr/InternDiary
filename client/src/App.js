@@ -6,6 +6,7 @@ import Lenis from 'lenis';
 const Layout = lazy(() => import('./components/layout.jsx'));
 const Login = lazy(() => import('./pages/login.jsx'));
 const Signup = lazy(() => import('./pages/signup.jsx'));
+const ForgotPassword = lazy(() => import('./pages/forgotPassword.jsx'));
 const Dashboard = lazy(() => import('./pages/dashboard.jsx'));
 const Planner = lazy(() => import('./pages/planner.jsx'));
 const Applications = lazy(() => import('./pages/application.jsx'));
@@ -48,6 +49,7 @@ function App() {
             {/* Public Route */}
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
             
             {/* Protected Routes inside Layout */}
             <Route element={<Layout />}>

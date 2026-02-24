@@ -43,3 +43,7 @@ export const apiRequest = async (endpoint, method = 'GET', body = null, token = 
   
   return data;
 };
+
+export const resetPassword = async (email) => {
+  return apiRequest('/auth/forgot-password', 'POST', { email });
+};
