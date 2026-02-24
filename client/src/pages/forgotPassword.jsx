@@ -21,7 +21,7 @@ export default function ForgotPassword() {
     setLoading(true);
     
     try {
-      const response = await resetPassword(email);
+      await resetPassword(email);
       setSuccess('OTP sent to your registered email');
       setStep('otp');
     } catch (err) {
@@ -71,7 +71,7 @@ export default function ForgotPassword() {
 
     setLoading(true);
     try {
-      const response = await resetNewPassword(resetToken, newPassword);
+      await resetNewPassword(resetToken, newPassword);
       setSuccess('Password reset successful! Redirecting to login...');
       setTimeout(() => {
         navigate('/login');
