@@ -25,8 +25,8 @@ const UserSchema = new mongoose.Schema(
       cgpa: { type: Number },
     },
     resumePath: { type: String, default: "" },
-    passwordResetToken: { type: String, default: null },
-    passwordResetExpires: { type: Date, default: null },
+    otp: { type: String, default: null },
+    otpExpires: { type: Date, default: null },
   },
   { timestamps: true },
 );

@@ -47,3 +47,11 @@ export const apiRequest = async (endpoint, method = 'GET', body = null, token = 
 export const resetPassword = async (email) => {
   return apiRequest('/auth/forgot-password', 'POST', { email });
 };
+
+export const verifyOTP = async (email, otp) => {
+  return apiRequest('/auth/verify-otp', 'POST', { email, otp });
+};
+
+export const resetNewPassword = async (resetToken, newPassword) => {
+  return apiRequest('/auth/reset-password', 'POST', { resetToken, newPassword });
+};

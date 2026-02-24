@@ -80,7 +80,7 @@ const loginUser = async (req, res) => {
   }
 };
 
-// @desc    Generate password reset token
+// @desc    Send OTP to user email for password reset
 // @route   POST /api/auth/forgot-password
 // @access  Public
 const forgotPassword = async (req, res) => {
@@ -90,57 +90,97 @@ const forgotPassword = async (req, res) => {
     // 1. Check if user exists
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: 'Enter registered Email-ID' });
     }
 
-    // 2. Generate reset token
-    const resetToken = crypto.randomBytes(32).toString('hex');
-    const hashedToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+    // 2. Generate 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-    // 3. Store token with 1 hour expiration
-    user.passwordResetToken = hashedToken;
-    user.passwordResetExpires = Date.now() + 60 * 60 * 1000; // 1 hour
+    // 3. Store OTP with 10 minute expiration
+    user.otp = otp;
+    user.otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
     await user.save();
 
-    // 4. Return token (in production, send via email)
+    // 4. Return OTP (in production, send via email service like Nodemailer)
+    // For now, returning for testing purposes
     res.status(200).json({
-      message: 'Password reset token generated',
-      resetToken: resetToken, // In production, this would be sent via email
-      expiresIn: '1 hour'
+      message: 'OTP sent to registered email',
+      otp: otp, // Remove this in production
+      expiresIn: '10 minutes'
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// @desc    Reset password using token
+// @desc    Verify OTP
+// @route   POST /api/auth/verify-otp
+// @access  Public
+const verifyOTP = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    // 1. Find user
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // 2. Check if OTP is valid and not expired
+    if (user.otp !== otp || user.otpExpires < Date.now()) {
+      return res.status(400).json({ message: 'Invalid or expired OTP' });
+    }
+
+    // 3. Clear OTP (it's verified now)
+    user.otp = null;
+    user.otpExpires = null;
+    await user.save();
+
+    // 4. Generate a temporary token for password reset (valid for 5 minutes)
+    const resetToken = jwt.sign({ id: user._id, type: 'reset' }, process.env.JWT_SECRET, {
+      expiresIn: '5m'
+    });
+
+    res.status(200).json({
+      message: 'OTP verified successfully',
+      resetToken: resetToken,
+      expiresIn: '5 minutes'
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Reset password using OTP verification token
 // @route   POST /api/auth/reset-password
 // @access  Public
-const resetPasswordToken = async (req, res) => {
+const resetPassword = async (req, res) => {
   try {
     const { resetToken, newPassword } = req.body;
 
-    // 1. Hash the token to compare
-    const hashedToken = crypto.createHash('sha256').update(resetToken).digest('hex');
-
-    // 2. Find user with valid token
-    const user = await User.findOne({
-      passwordResetToken: hashedToken,
-      passwordResetExpires: { $gt: Date.now() }
-    });
-
-    if (!user) {
+    // 1. Verify token
+    let decoded;
+    try {
+      decoded = jwt.verify(resetToken, process.env.JWT_SECRET);
+      if (decoded.type !== 'reset') {
+        throw new Error('Invalid token type');
+      }
+    } catch (err) {
       return res.status(400).json({ message: 'Invalid or expired reset token' });
+    }
+
+    // 2. Find user and update password
+    const user = await User.findById(decoded.id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
     }
 
     // 3. Hash new password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(newPassword, salt);
 
-    // 4. Update password and clear reset token
+    // 4. Update password
     user.password = hashedPassword;
-    user.passwordResetToken = null;
-    user.passwordResetExpires = null;
     await user.save();
 
     res.status(200).json({
@@ -158,4 +198,4 @@ const resetPasswordToken = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser, forgotPassword, resetPasswordToken };
+module.exports = { registerUser, loginUser, forgotPassword, verifyOTP, resetPassword };
