@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext.js';
-import { Suspense, useEffect, lazy } from 'react';
-import Lenis from 'lenis';
+import { Suspense, lazy } from 'react';
 
 const Layout = lazy(() => import('./components/layout.jsx'));
 const Login = lazy(() => import('./pages/login.jsx'));
@@ -21,26 +20,6 @@ const LazyFallback = () => (
 );
 
 function App() {
-  useEffect(() => {
-    const lenis = new Lenis({
-      duration: 1.1,
-      smoothWheel: true,
-      smoothTouch: false
-    });
-
-    let rafId;
-    const raf = (time) => {
-      lenis.raf(time);
-      rafId = requestAnimationFrame(raf);
-    };
-    rafId = requestAnimationFrame(raf);
-
-    return () => {
-      cancelAnimationFrame(rafId);
-      lenis.destroy();
-    };
-  }, []);
-
   return (
     <AuthProvider>
       <BrowserRouter>
