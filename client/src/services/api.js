@@ -55,3 +55,15 @@ export const verifyOTP = async (email, otp) => {
 export const resetNewPassword = async (resetToken, newPassword) => {
   return apiRequest('/auth/reset-password', 'POST', { resetToken, newPassword });
 };
+
+export const getDomains = async () => {
+  return apiRequest('/users/domains');
+};
+
+export const getMe = async (token) => {
+  return apiRequest('/users/me', 'GET', null, token);
+};
+
+export const updatePreferences = async (preferredDomains, token) => {
+  return apiRequest('/users/preferences', 'PUT', { preferredDomains }, token);
+};

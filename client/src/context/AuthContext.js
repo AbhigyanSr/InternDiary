@@ -1,6 +1,5 @@
 import { createContext, useState, useEffect, useContext } from 'react';
-import { apiRequest } from '../services/api';
-
+import { apiRequest, updatePreferences as updatePreferencesApi } from '../services/api';
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -37,8 +36,19 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+  const savePreferences = async (preferredDomains) => {
+    const token = localStorage.getItem('token');
+    const data = await updatePreferencesApi(preferredDomains, token);
+
+    const updatedUser = { ...user, preferredDomains: data.preferredDomains };
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+    setUser(updatedUser);
+
+    return data;
+  };
+
   return (
-    <AuthContext.Provider value={{ user, register, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, register, login, logout, loading, savePreferences }}>
       {!loading && children}
     </AuthContext.Provider>
   );

@@ -3,6 +3,11 @@ import { AuthProvider } from './context/AuthContext.js';
 import { Suspense, lazy } from 'react';
 
 const Layout = lazy(() => import('./components/layout.jsx'));
+const ProtectedRoute = lazy(() => import('./components/protectedRoute.jsx'));
+const AdminRoute = lazy(() => import('./components/adminRoute.jsx'));
+const PublicRoute = lazy(() => import('./components/publicRoute.jsx'));
+
+const Landing = lazy(() => import('./pages/landing.jsx'));
 const Login = lazy(() => import('./pages/login.jsx'));
 const Signup = lazy(() => import('./pages/signup.jsx'));
 const ForgotPassword = lazy(() => import('./pages/forgotPassword.jsx'));
@@ -25,23 +30,33 @@ function App() {
       <BrowserRouter>
         <Suspense fallback={<LazyFallback />}>
           <Routes>
-            {/* Public Route */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            
-            {/* Protected Routes inside Layout */}
-            <Route element={<Layout />}>
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/planner" element={<Planner />} />
-              <Route path="/applications" element={<Applications />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/admin" element={<AdminDashboard />} />
-              <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            {/* Open to everyone */}
+            <Route path="/" element={<Landing />} />
+
+            {/* Only for logged-out visitors */}
+            <Route element={<PublicRoute />}>
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
             </Route>
 
-            {/* Fallback */}
-            <Route path="*" element={<Navigate to="/login" replace />} />
+            {/* Requires login */}
+            <Route element={<ProtectedRoute />}>
+              <Route element={<Layout />}>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/planner" element={<Planner />} />
+                <Route path="/applications" element={<Applications />} />
+                <Route path="/profile" element={<Profile />} />
+
+                {/* Requires login AND admin role */}
+                <Route element={<AdminRoute />}>
+                  <Route path="/admin" element={<AdminDashboard />} />
+                </Route>
+              </Route>
+            </Route>
+
+            {/* Unknown paths go to the landing page, not the login wall */}
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Suspense>
       </BrowserRouter>

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext.js';
+import DomainPreferences from '../components/DomainPreferences.jsx';
 
 export default function Profile() {
   const { user } = useAuth();
@@ -57,6 +58,8 @@ export default function Profile() {
       </div>
 
       <div className="divider"></div>
+      <div className="my-8">
+        <DomainPreferences /> </div>
 
       <section>
         <h2 className="text-xl font-semibold mb-4">Resume Management</h2>

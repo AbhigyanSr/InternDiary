@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { TECH_DOMAINS } = require("../constants/domains");
 const UserSchema = new mongoose.Schema(
   {
     name: {
@@ -17,12 +18,18 @@ const UserSchema = new mongoose.Schema(
     role: {
       type: String,
       enum: ["student", "admin"],
-      default: 'student'
+      default: "student",
     },
     profile: {
       resume: { type: String },
       branch: { type: String },
       cgpa: { type: Number },
+    },
+
+    preferredDomains: {
+      type: [String],
+      enum: TECH_DOMAINS,
+      default: [],
     },
     resumePath: { type: String, default: "" },
     otp: { type: String, default: null },
