@@ -7,8 +7,8 @@
 /* ===== CSS Custom Properties ===== */
 :root {
   /* Background Colors */
-  --bg-page: #B0E0E6;
-  --bg-sidebar: #B0E0E6;
+  --bg-page: #0a0c10;
+  --bg-sidebar: #0f1218;
   --bg-card: #141821;
   --bg-input: #0e131b;
   --bg-hover: rgba(255, 255, 255, 0.04);
