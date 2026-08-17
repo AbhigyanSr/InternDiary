@@ -95,6 +95,10 @@ export default function Layout() {
               <p className="text-xs text-muted">{user?.email}</p>
             </div>
           )}
+
+          <div className="mb-1.5">
+            <SidebarItem to="/profile" label="Profile" isCollapsed={isSidebarCollapsed} />
+          </div>
           <button 
             onClick={logout}
             className={`w-full text-left px-3 py-2 text-sm text-muted hover:text-red-400 hover:bg-red-900/10 rounded-md transition ${isSidebarCollapsed ? 'text-center px-1 text-lg' : ''}`}

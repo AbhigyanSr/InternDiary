@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import { TECH_DOMAINS } from '../constants/domains.js';
 
 export default function Landing() {
   return (
@@ -29,18 +28,6 @@ export default function Landing() {
         <div className="flex flex-wrap gap-3">
           <Link to="/signup" className="btn-primary">Get started</Link>
           <Link to="/login" className="btn-secondary">I already have an account</Link>
-        </div>
-      </section>
-
-      {/* Domains */}
-      <section className="px-6 md:px-12 py-12">
-        <p className="text-sm text-muted uppercase tracking-wider mb-4">
-          Pick your domains, get a feed that matches
-        </p>
-        <div className="flex flex-wrap gap-2">
-          {TECH_DOMAINS.map((domain) => (
-            <span key={domain} className="chip chip-neutral">{domain}</span>
-          ))}
         </div>
       </section>
 
