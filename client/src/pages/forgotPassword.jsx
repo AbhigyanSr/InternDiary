@@ -88,7 +88,7 @@ export default function ForgotPassword() {
       <div className="card auth-card p-8 space-y-6">
         <div className="text-center">
           <h1 className="font-serif text-3xl text-zinc-950 tracking-tight text-gradient mb-2">Intern Diary</h1>
-          <h2 className="font-serif text-3xl text-zinc-950 tracking-tight">
+          <h2 className="font-sans font-semibold text-2xl text-zinc-900 tracking-tight">
             {step === 'email' && 'Reset your password'}
             {step === 'otp' && 'Verify OTP'}
             {step === 'password' && 'Set new password'}

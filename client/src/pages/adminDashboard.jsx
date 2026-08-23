@@ -151,7 +151,7 @@ export default function AdminDashboard() {
   return (
     <div className="max-w-5xl mx-auto space-y-8">
       <div>
-        <h1 className="font-serif text-3xl text-zinc-950 tracking-tight mb-1">{editingId ? 'Edit Opportunity' : 'Admin: Post Opportunity'}</h1>
+        <h1 className="font-sans font-semibold text-3xl text-zinc-900 tracking-tight mb-1">{editingId ? 'Edit Opportunity' : 'Admin: Post Opportunity'}</h1>
         <p className="text-muted">{editingId ? 'Update opportunity details' : 'Create new internships, hackathons, and webinars'}</p>
       </div>
       
@@ -260,7 +260,7 @@ export default function AdminDashboard() {
       </form>
 
       <section className="space-y-4">
-        <h2 className="font-serif text-3xl text-zinc-950 tracking-tight">Manage Opportunities</h2>
+        <h2 className="font-sans font-semibold text-2xl text-zinc-900 tracking-tight">Manage Opportunities</h2>
         {loadingJobs ? (
           <div className="text-center py-8">
             <div className="loading-spinner mx-auto mb-3"></div>
@@ -278,8 +278,8 @@ export default function AdminDashboard() {
                 className="card p-5 flex flex-col md:flex-row md:items-start md:justify-between gap-4"
               >
                 <div className="flex-1">
-                  <h3 className="font-serif text-2xl text-zinc-950 tracking-tight mb-1">{job.title}</h3>
-                  <p className="text-muted text-sm mb-2">{job.company}</p>
+                  <h3 className="font-sans font-medium text-xl text-zinc-900 tracking-tight mb-1">{job.title}</h3>
+                  <p className="font-mono text-xs uppercase tracking-wider text-zinc-500 mb-2">{job.company}</p>
                   <div className="flex gap-2">
                     <span className="chip text-xs">
                       {job.type || 'Internship'}

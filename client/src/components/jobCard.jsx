@@ -43,8 +43,8 @@ export default function JobCard({ job, onApply, isApplied }) {
                 })}
               </span>
             </div>
-            <h3 className="font-serif text-2xl text-zinc-950 tracking-tight mb-1">{job.title || job.role}</h3>
-            <p className="text-muted text-sm font-medium">{job.company}</p>
+            <h3 className="font-sans font-medium text-2xl text-zinc-900 tracking-tight mb-1">{job.title || job.role}</h3>
+            <p className="font-mono text-xs uppercase tracking-wider text-zinc-500">{job.company}</p>
           </div>
         </div>
 
@@ -97,8 +97,8 @@ export default function JobCard({ job, onApply, isApplied }) {
                 }`}>
                   {job.type || 'Internship'}
                 </span>
-                <h3 className="font-serif text-3xl text-zinc-950 tracking-tight mb-1">{job.title || job.role}</h3>
-                <p className="text-muted font-medium">{job.company}</p>
+                <h3 className="font-sans font-medium text-3xl text-zinc-900 tracking-tight mb-1">{job.title || job.role}</h3>
+                <p className="font-mono text-xs uppercase tracking-wider text-zinc-500">{job.company}</p>
               </div>
               <button
                 type="button"

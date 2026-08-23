@@ -82,7 +82,7 @@ export default function Planner() {
   return (
     <div className="max-w-4xl mx-auto">
       <div className="mb-8">
-        <h1 className="font-serif text-3xl text-zinc-950 tracking-tight mb-1">
+        <h1 className="font-sans font-semibold text-3xl text-zinc-900 tracking-tight mb-1">
           Preparation Planner
         </h1>
         <p className="text-muted">Stay on top of your interview prep</p>

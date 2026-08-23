@@ -30,7 +30,7 @@ export default function DomainPreferences() {
 
   return (
     <div>
-      <h2 className="font-serif text-3xl text-zinc-950 tracking-tight mb-1">Your domains</h2>
+      <h2 className="font-sans font-semibold text-2xl text-zinc-900 tracking-tight mb-1">Your domains</h2>
       <p className="text-muted text-sm mb-4">
         Your news feed will show articles from the domains you pick here.
       </p>

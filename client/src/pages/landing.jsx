@@ -4,7 +4,7 @@ export default function Landing() {
   return (
     <div className="bg-page min-h-screen">
       {/* Top bar */}
-      <header className="flex justify-between items-center px-6 md:px-12 py-6">
+      <header className="hero-mesh flex justify-between items-center px-6 md:px-12 py-6">
         <div>
           <h1 className="font-serif text-3xl text-zinc-950 tracking-tight text-gradient">Intern Diary</h1>
           <p className="text-xs text-muted mt-1">Track your journey</p>
@@ -37,7 +37,7 @@ export default function Landing() {
 
       {/* Placeholder: Feature 2 renders public news here */}
       <section className="px-6 md:px-12 py-12">
-        <h3 className="font-serif text-3xl text-zinc-950 tracking-tight mb-2">Latest in tech</h3>
+        <h3 className="font-sans font-semibold text-2xl text-zinc-900 tracking-tight mb-2">Latest in tech</h3>
         <p className="text-muted mb-6">
           Summarised and tagged automatically. Log in to filter by your domains.
         </p>
@@ -48,7 +48,7 @@ export default function Landing() {
 
       {/* Placeholder: Feature 4 renders public interview previews here */}
       <section className="px-6 md:px-12 py-12">
-        <h3 className="font-serif text-3xl text-zinc-950 tracking-tight mb-2">Interview experiences</h3>
+        <h3 className="font-sans font-semibold text-2xl text-zinc-900 tracking-tight mb-2">Interview experiences</h3>
         <p className="text-muted mb-6">
           Round-by-round accounts from students who have been through it.
         </p>
