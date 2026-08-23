@@ -36,7 +36,7 @@ export default function Applications() {
   const getStatusColor = (status) => {
     const key = (status || '').toLowerCase();
     const colors = {
-      applied: 'chip-neutral',
+      applied: 'chip-applied',
       interviewing: 'chip-warning',
       offer: 'chip-success',
       rejected: 'chip-danger'
@@ -139,7 +139,7 @@ export default function Applications() {
     <div className="max-w-5xl mx-auto space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
-          <h1 className="text-3xl font-semibold mb-1">Application Tracker</h1>
+          <h1 className="font-serif text-3xl text-zinc-950 tracking-tight mb-1">Application Tracker</h1>
           <p className="text-muted">Track any internship, even if it's not listed</p>
         </div>
         <button
@@ -157,7 +157,7 @@ export default function Applications() {
           className="card p-6 space-y-5"
         >
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold">Add Opportunity</h3>
+            <h3 className="font-serif text-2xl text-zinc-950 tracking-tight">Add Opportunity</h3>
             <button
               type="button"
               onClick={() => setShowForm(false)}
@@ -168,7 +168,7 @@ export default function Applications() {
             </button>
           </div>
           {error && (
-            <div className="bg-red-900/20 border border-red-900/50 text-red-300 px-4 py-3 rounded-lg text-sm">
+            <div className="bg-rose-50 border border-rose-200/60 text-rose-700 px-4 py-3 rounded-lg text-sm">
               {error}
             </div>
           )}
@@ -377,7 +377,7 @@ export default function Applications() {
             <div className="flex items-start justify-between p-6" style={{ borderBottom: '1px solid var(--border-separator)' }}>
               <div>
                 <p className="text-xs text-muted uppercase tracking-wider mb-1">Application Details</p>
-                <h3 className="text-xl font-semibold">{editingApp.company}</h3>
+                <h3 className="font-serif text-3xl text-zinc-950 tracking-tight">{editingApp.company}</h3>
                 <p className="text-sm text-muted">{editingApp.role}</p>
               </div>
               <button

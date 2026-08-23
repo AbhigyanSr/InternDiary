@@ -43,7 +43,7 @@ export default function JobCard({ job, onApply, isApplied }) {
                 })}
               </span>
             </div>
-            <h3 className="text-lg font-semibold mb-1">{job.title || job.role}</h3>
+            <h3 className="font-serif text-2xl text-zinc-950 tracking-tight mb-1">{job.title || job.role}</h3>
             <p className="text-muted text-sm font-medium">{job.company}</p>
           </div>
         </div>
@@ -97,7 +97,7 @@ export default function JobCard({ job, onApply, isApplied }) {
                 }`}>
                   {job.type || 'Internship'}
                 </span>
-                <h3 className="text-2xl font-semibold mb-1">{job.title || job.role}</h3>
+                <h3 className="font-serif text-3xl text-zinc-950 tracking-tight mb-1">{job.title || job.role}</h3>
                 <p className="text-muted font-medium">{job.company}</p>
               </div>
               <button
@@ -112,7 +112,7 @@ export default function JobCard({ job, onApply, isApplied }) {
 
             <div className="p-6 space-y-5">
               <div>
-                <h4 className="text-sm font-semibold text-muted uppercase tracking-wider mb-2">Description</h4>
+                <h4 className="font-mono text-xs uppercase tracking-wider text-zinc-500 mb-2">Description</h4>
                 <div className="text-sm leading-relaxed p-4 bg-page rounded-lg border border-soft">
                   {job.description?.trim() || 'No description provided.'}
                 </div>

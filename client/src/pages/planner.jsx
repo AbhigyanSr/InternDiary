@@ -82,7 +82,7 @@ export default function Planner() {
   return (
     <div className="max-w-4xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-semibold mb-1">
+        <h1 className="font-serif text-3xl text-zinc-950 tracking-tight mb-1">
           Preparation Planner
         </h1>
         <p className="text-muted">Stay on top of your interview prep</p>
@@ -151,7 +151,7 @@ export default function Planner() {
                 </span>
                 <button
                   onClick={() => deleteTask(task._id)}
-                  className="text-red-400 hover:text-red-300 text-sm transition"
+                  className="text-rose-700 hover:text-rose-900 text-sm transition"
                   title="Delete task"
                 >
                   ✕

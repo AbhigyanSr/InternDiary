@@ -27,7 +27,7 @@ A complete premium dark theme has been applied across the entire Intern Diary ap
 - **Buttons**: Multiple variants (primary, outline, secondary)
 - **Forms**: Polished inputs with focus states
 - **Tables**: Hover effects and clean separators
-- **Typography**: Inter font with proper hierarchy
+- **Typography**: Instrument Serif headings, Plus Jakarta Sans body text, and JetBrains Mono metadata
 - **Color chips**: Status badges for applications
 - **Animations**: Smooth transitions and hover effects
 

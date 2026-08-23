@@ -53,13 +53,13 @@ export default function Signup() {
     <div className="auth-page">
       <div className="card auth-card p-8 space-y-6">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-gradient mb-2">Intern Diary</h1>
-          <h2 className="text-xl font-semibold">Create your account</h2>
+          <h1 className="font-serif text-3xl text-zinc-950 tracking-tight text-gradient mb-2">Intern Diary</h1>
+          <h2 className="font-serif text-3xl text-zinc-950 tracking-tight">Create your account</h2>
           <p className="text-muted text-sm mt-1">Start tracking your internship journey</p>
         </div>
         
         {error && (
-          <div className="bg-red-900/20 border border-red-900/50 text-red-300 px-4 py-3 rounded-lg text-sm">
+          <div className="bg-rose-50 border border-rose-200/60 text-rose-700 px-4 py-3 rounded-lg text-sm">
             {error}
           </div>
         )}

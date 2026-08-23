@@ -1,20 +1,20 @@
-# Intern Diary Premium Dark Theme Guide
+# Intern Diary Editorial Luxury Theme Guide
 
 ## Overview
-A modern, minimal, premium dark theme for the Intern Diary dashboard with clean aesthetics and excellent readability.
+A modern, minimal light theme for the Intern Diary dashboard with an editorial hierarchy and excellent readability.
 
 ## Color System
 
 ### Background Colors
-- **Page Background**: `#0A0C10` - Deep dark with subtle gradient
-- **Sidebar Background**: `#0F1218` - Slightly lighter than page
-- **Card Background**: `#141821` - Elevated surface for content
-- **Input Background**: `#0E131B` - Darker for form fields
+- **Page Background**: `#FAF9F5` - Warm alabaster canvas
+- **Sidebar Background**: `#FFFFFF` - Clean navigation surface
+- **Card Background**: `#FFFFFF` - Elevated white surface
+- **Input Background**: `#FFFFFF` - Clear, bordered form fields
 
 ### Text Colors
-- **Primary Text**: `#E6EAF2` - High contrast for headings and important content
-- **Secondary/Muted Text**: `#9AA3B2` - Lower contrast for descriptions
-- **Inverse Text**: `#1A1305` - For text on accent backgrounds
+- **Primary Text**: `#09090B` - Obsidian black for headings and important content
+- **Secondary/Muted Text**: `#71717A` - Zinc grey for descriptions
+- **Inverse Text**: `#FFFFFF` - For text on primary buttons
 
 ### Accent Color
 - **Primary Accent**: `#F59E0B` (Amber) - Buttons, links, highlights
@@ -29,12 +29,15 @@ A modern, minimal, premium dark theme for the Intern Diary dashboard with clean 
 ## Typography
 
 ### Font Family
-- **Primary**: `Inter` - Modern, clean, highly readable
+- **Headings**: `Instrument Serif` - Editorial display face for titles
+- **Body and controls**: `Plus Jakarta Sans` - Clear, modern reading face
+- **Metadata**: `JetBrains Mono` - Compact face for tags, dates, and table labels
 - Weights: 400 (regular), 500 (medium), 600 (semibold), 700 (bold)
 
 ### Headings
-- Font weight: **600** (semibold)
-- Letter spacing: `-0.01em` (tight for modern look)
+- Font family: `Instrument Serif`
+- Font weight: **400** (regular)
+- Letter spacing: `0`
 - Line height: `1.3`
 
 ### Body Text
@@ -54,11 +57,12 @@ A modern, minimal, premium dark theme for the Intern Diary dashboard with clean 
 ### Buttons
 
 #### Primary Button (`.btn-primary`)
-- Background: Accent color (`#F59E0B`)
-- Text: Dark inverse color
-- Border radius: `10px`
-- Hover: Lifts and brightens
-- Font weight: **600**
+- Background: Zinc 950 (`#09090B`)
+- Text: White
+- Border radius: `8px`
+- Hover: Zinc 800 (`#27272A`)
+- Font family: `Plus Jakarta Sans`
+- Font weight: **500**
 
 #### Outline Button (`.btn-outline`)
 - Border: `1.5px solid accent`

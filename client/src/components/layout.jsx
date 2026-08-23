@@ -1,6 +1,15 @@
 import { Navigate, Outlet, Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.js";
 import { useState } from "react";
+export function RootLayout({ children }) {
+  return (
+    <html lang="en">
+      <body className="font-sans antialiased text-zinc-800 bg-[#FAF9F5]">
+        {children}
+      </body>
+    </html>
+  );
+}
 
 const SidebarItem = ({ to, label, icon, isCollapsed }) => {
   const location = useLocation();
@@ -67,7 +76,7 @@ export default function Layout() {
           className={`mb-10 ${isSidebarCollapsed ? "flex items-center justify-center" : ""}`}
         >
           <h1
-            className={`text-2xl font-bold text-gradient ${isSidebarCollapsed ? "text-center text-lg" : ""}`}
+            className={`font-serif text-3xl text-zinc-950 tracking-tight text-gradient ${isSidebarCollapsed ? "text-center text-lg" : ""}`}
           >
             {isSidebarCollapsed ? "ID" : "Intern Diary"}
           </h1>
@@ -148,7 +157,7 @@ export default function Layout() {
           </div>
           <button
             onClick={logout}
-            className={`w-full text-left px-3 py-2 text-sm text-muted hover:text-red-400 hover:bg-red-900/10 rounded-md transition ${isSidebarCollapsed ? "text-center px-1 text-lg" : ""}`}
+            className={`w-full text-left px-3 py-2 text-sm text-muted hover:text-rose-700 hover:bg-rose-50 rounded-md transition ${isSidebarCollapsed ? "text-center px-1 text-lg" : ""}`}
             title="Logout"
           >
             {isSidebarCollapsed ? "⏻" : "Logout"}
@@ -171,18 +180,18 @@ export default function Layout() {
       {/* Main Content Area */}
       <main className="flex-1">
         {/* Mobile Header */}
-        <header className="card md:hidden flex justify-between items-center p-4 m-4 mb-0">
+        <header className="site-header sticky top-0 z-20 flex justify-between items-center px-6 py-4 md:px-8">
           <div className="flex flex-col items-start gap-2">
             <button
               type="button"
-              className="bg-surface border border-border rounded-full w-8 h-8 flex flex-col items-center justify-center gap-1 hover:bg-surface-hover transition-colors"
+              className="bg-white border border-zinc-200 rounded-full w-8 h-8 flex flex-col items-center justify-center gap-1 hover:bg-zinc-100 transition-colors"
               aria-label="Open menu"
             >
-              <span className="w-4 h-0.5 bg-muted rounded"></span>
-              <span className="w-4 h-0.5 bg-muted rounded"></span>
-              <span className="w-4 h-0.5 bg-muted rounded"></span>
+              <span className="w-4 h-0.5 bg-zinc-500 rounded"></span>
+              <span className="w-4 h-0.5 bg-zinc-500 rounded"></span>
+              <span className="w-4 h-0.5 bg-zinc-500 rounded"></span>
             </button>
-            <h1 className="font-bold text-gradient">Intern Diary</h1>
+            <h1 className="font-serif text-3xl text-zinc-950 tracking-tight text-gradient">Intern Diary</h1>
           </div>
           <span className="text-xs text-muted">{user?.name}</span>
         </header>

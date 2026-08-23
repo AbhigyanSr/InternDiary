@@ -49,7 +49,7 @@ export default function Profile() {
 
   return (
     <div className="max-w-2xl mx-auto card p-8">
-      <h1 className="text-3xl font-semibold mb-2">Your Profile</h1>
+      <h1 className="font-serif text-3xl text-zinc-950 tracking-tight mb-2">Your Profile</h1>
       <p className="text-muted mb-8">Manage your account and resume</p>
       
       <div className="mb-8">
@@ -62,11 +62,11 @@ export default function Profile() {
         <DomainPreferences /> </div>
 
       <section>
-        <h2 className="text-xl font-semibold mb-4">Resume Management</h2>
+        <h2 className="font-serif text-3xl text-zinc-950 tracking-tight mb-4">Resume Management</h2>
         
         {resumeUrl ? (
-          <div className="mb-6 p-4 bg-green-900/10 border border-green-900/30 rounded-lg flex items-center justify-between">
-            <span className="text-green-400 text-sm font-medium">✓ Resume is uploaded</span>
+          <div className="mb-6 p-4 bg-emerald-50 border border-emerald-200/60 rounded-lg flex items-center justify-between">
+            <span className="text-emerald-700 text-sm font-medium">✓ Resume is uploaded</span>
             <a 
               href={`http://localhost:5000/${resumeUrl}`} 
               target="_blank"

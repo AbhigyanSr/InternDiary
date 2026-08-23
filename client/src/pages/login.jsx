@@ -26,8 +26,8 @@ export default function Login() {
     <div className="auth-page">
       <div className="card auth-card p-8 space-y-6">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-gradient mb-2">Intern Diary</h1>
-          <h2 className="text-xl font-semibold">Welcome back</h2>
+          <h1 className="font-serif text-3xl text-zinc-950 tracking-tight text-gradient mb-2">Intern Diary</h1>
+          <h2 className="font-serif text-3xl text-zinc-950 tracking-tight">Welcome back</h2>
           <p className="text-muted text-sm mt-1">Sign in to continue your journey</p>
         </div>
         

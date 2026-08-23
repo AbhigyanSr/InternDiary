@@ -17,7 +17,7 @@ A comprehensive platform for managing internship applications, tracking opportun
 - React 18
 - React Router v6
 - Tailwind CSS
-- Custom Premium Dark Theme
+- Custom Editorial Luxury light theme
 
 ### Backend
 - Node.js
@@ -100,9 +100,10 @@ intern-diary/
 
 ## Theme
 
-Intern Diary features a **Premium Dark Theme** with:
-- Modern SaaS-inspired aesthetics
-- Amber accent color (#F59E0B)
+Intern Diary features an **Editorial Luxury light theme** with:
+- Instrument Serif headings, Plus Jakarta Sans UI text, and JetBrains Mono metadata
+- Warm alabaster canvas (#FAF9F5) with white cards and zinc borders
+- Monochrome obsidian primary actions and refined status colors
 - Smooth animations and transitions
 - Excellent readability and accessibility
 

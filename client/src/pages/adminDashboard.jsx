@@ -151,12 +151,12 @@ export default function AdminDashboard() {
   return (
     <div className="max-w-5xl mx-auto space-y-8">
       <div>
-        <h1 className="text-3xl font-semibold mb-1">{editingId ? 'Edit Opportunity' : 'Admin: Post Opportunity'}</h1>
+        <h1 className="font-serif text-3xl text-zinc-950 tracking-tight mb-1">{editingId ? 'Edit Opportunity' : 'Admin: Post Opportunity'}</h1>
         <p className="text-muted">{editingId ? 'Update opportunity details' : 'Create new internships, hackathons, and webinars'}</p>
       </div>
       
       {error && (
-        <div className="p-4 bg-red-900/20 border border-red-900/50 text-red-300 rounded-lg text-sm">
+        <div className="p-4 bg-rose-50 border border-rose-200/60 text-rose-700 rounded-lg text-sm">
           {error}
         </div>
       )}
@@ -260,7 +260,7 @@ export default function AdminDashboard() {
       </form>
 
       <section className="space-y-4">
-        <h2 className="text-2xl font-semibold">Manage Opportunities</h2>
+        <h2 className="font-serif text-3xl text-zinc-950 tracking-tight">Manage Opportunities</h2>
         {loadingJobs ? (
           <div className="text-center py-8">
             <div className="loading-spinner mx-auto mb-3"></div>
@@ -278,7 +278,7 @@ export default function AdminDashboard() {
                 className="card p-5 flex flex-col md:flex-row md:items-start md:justify-between gap-4"
               >
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold mb-1">{job.title}</h3>
+                  <h3 className="font-serif text-2xl text-zinc-950 tracking-tight mb-1">{job.title}</h3>
                   <p className="text-muted text-sm mb-2">{job.company}</p>
                   <div className="flex gap-2">
                     <span className="chip text-xs">
@@ -300,7 +300,7 @@ export default function AdminDashboard() {
                   <button
                     type="button"
                     onClick={() => handleDelete(job._id)}
-                    className="btn-outline text-red-400 border-red-400 hover:bg-red-900/20 px-4 py-2 text-sm"
+                    className="btn-outline text-rose-700 border-rose-200 hover:bg-rose-50 px-4 py-2 text-sm"
                   >
                     Delete
                   </button>

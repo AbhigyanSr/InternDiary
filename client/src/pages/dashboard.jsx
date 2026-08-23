@@ -87,7 +87,7 @@ export default function Dashboard() {
       <header className="mb-8">
         <div className="flex flex-col md:flex-row md:justify-between md:items-end gap-4 mb-4">
           <div>
-            <h1 className="text-3xl font-semibold mb-1">Opportunity Feed</h1>
+            <h1 className="font-serif text-3xl text-zinc-950 tracking-tight mb-1">Opportunity Feed</h1>
             <p className="text-muted">New opportunities posted in the last 24 hours</p>
           </div>
           <div className="chip">
@@ -152,7 +152,7 @@ export default function Dashboard() {
         <section className="mt-12">
           <div className="flex items-center gap-3 mb-6">
             <div className="flex-1 h-px bg-border-subtle"></div>
-            <h2 className="text-xl font-semibold text-muted">Missed Opportunities</h2>
+            <h2 className="font-serif text-3xl text-zinc-950 tracking-tight text-muted">Missed Opportunities</h2>
             <div className="flex-1 h-px bg-border-subtle"></div>
           </div>
           <p className="text-sm text-muted text-center mb-6">

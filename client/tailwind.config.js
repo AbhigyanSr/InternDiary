@@ -3,29 +3,33 @@ module.exports = {
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
+    "./app/**/*.{js,ts,jsx,tsx}",
+    "./components/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {
       colors: {
-        'page-bg': '#0A0C10',
-        'sidebar-bg': '#0F1218',
-        'card-bg': '#141821',
-        'accent': '#F59E0B',
-        'accent-hover': '#F6B94A',
-        'text-primary': '#E6EAF2',
-        'text-muted': '#9AA3B2',
+        "page-bg": "#FAF9F5",
+        "sidebar-bg": "#FFFFFF",
+        "card-bg": "#FFFFFF",
+        accent: "#09090B",
+        "accent-hover": "#27272A",
+        "text-primary": "#09090B",
+        "text-muted": "#71717A",
       },
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
+        sans: ["Plus Jakarta Sans", "sans-serif"],
+        serif: ["Instrument Serif", "serif"],
+        mono: ["JetBrains Mono", "monospace"],
       },
       borderRadius: {
-        'card': '12px',
+        card: "12px",
       },
       boxShadow: {
-        'soft': '0 10px 28px rgba(0, 0, 0, 0.32)',
-        'elevated': '0 14px 30px rgba(0, 0, 0, 0.35)',
+        soft: "0 10px 28px rgba(0, 0, 0, 0.32)",
+        elevated: "0 14px 30px rgba(0, 0, 0, 0.35)",
       },
     },
   },
   plugins: [],
-}
+};

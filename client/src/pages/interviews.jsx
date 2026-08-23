@@ -1,7 +1,7 @@
 export default function Interviews() {
   return (
     <div>
-      <h1 className="text-3xl font-bold">Interview Experiences</h1>
+      <h1 className="font-serif text-3xl text-zinc-950 tracking-tight">Interview Experiences</h1>
       <p className="text-muted mt-1 mb-8">
         Round-by-round accounts from students who have been through it
       </p>
