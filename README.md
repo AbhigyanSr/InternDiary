@@ -4,9 +4,9 @@ A comprehensive platform for managing internship applications, tracking opportun
 
 ## Features
 
-- **🎯 Opportunity Dashboard**: Browse and filter internships, hackathons, and webinars
-- **📝 Application Tracker**: Monitor your application status and deadlines
-- **✅ Preparation Planner**: Organize interview prep tasks by category (DSA, Resume, Applications)
+- ** Opportunity Dashboard**: Browse and filter internships, hackathons, and webinars
+- ** Application Tracker**: Monitor your application status and deadlines
+- ** Preparation Planner**: Organize interview prep tasks by category (DSA, Resume, Applications)
 - **👤 Profile Management**: Upload resumes and manage your profile
 - **🔐 Secure Authentication**: JWT-based authentication with role-based access
 - **⚙️ Admin Panel**: Post, edit, and manage opportunities (admin only)
