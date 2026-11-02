@@ -17,8 +17,11 @@ export const apiRequest = async (endpoint, method = 'GET', body = null, token = 
     body: body ? JSON.stringify(body) : null,
   });
 
-  // Handle authentication errors
-  if (response.status === 401) {
+  // A 401 on a request that carried a token means the session expired.
+  // A 401 with no token (e.g. a failed login attempt) is just "wrong
+  // credentials" and must fall through to the normal error handling below
+  // so the caller gets a real message instead of undefined.
+  if (response.status === 401 && token) {
     console.error('Unauthorized - clearing token');
     localStorage.removeItem('token');
     localStorage.removeItem('user');
