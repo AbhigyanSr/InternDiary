@@ -46,6 +46,7 @@ app.use('/api/jobs', require('./routes/jobRoutes'));
 app.use('/api/tasks', require('./routes/taskRoutes'));
 app.use('/api/applications', require('./routes/appRoutes'));
 app.use('/api/users', require('./routes/userRoutes'));
+app.use('/api/interviews', require('./routes/interviewRoutes'));
 // Resume Upload Route
 // Note: Changed from { upload } to upload to match your module.exports
 const { protect } = require('./middleware/authMiddleware');
