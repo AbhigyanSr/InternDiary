@@ -6,7 +6,13 @@ const { TECH_DOMAINS } = require('../constants/domains');
 const { fetchArticleContent, fetchFeeds, getRobotsPolicy, normalizeUrl } = require('../utils/newsScraper');
 const { enrichArticle, getModel, validateEnrichment } = require('../utils/llmHandler');
 const { deduplicateArticles, refreshNews } = require('../utils/newsIngestion');
-const { startNewsCron, stopNewsCron, isNewsCronStarted } = require('../utils/newsCron');
+const {
+  startNewsCron,
+  stopNewsCron,
+  isNewsCronStarted,
+  isNewsCronEnabled,
+  createCronRunner,
+} = require('../utils/newsCron');
 
 test('normalizes tracking parameters and fragments from article URLs', () => {
   assert.equal(normalizeUrl('HTTPS://Example.com/story/?utm_source=x#comments'), 'https://example.com/story');
@@ -110,6 +116,9 @@ test('limits articles and Gemini requests per ingestion run', async () => {
 });
 
 test('cron initialization is idempotent and rejects invalid schedules', () => {
+  assert.equal(isNewsCronEnabled('true'), true);
+  assert.equal(isNewsCronEnabled('1'), true);
+  assert.equal(isNewsCronEnabled('false'), false);
   assert.throws(() => startNewsCron({ schedule: 'not-a-cron' }), /Invalid/);
   const first = startNewsCron({ schedule: '*/5 * * * * *', refreshNews: async () => {} });
   const second = startNewsCron({ schedule: '*/1 * * * * *', refreshNews: async () => {} });
@@ -117,6 +126,58 @@ test('cron initialization is idempotent and rejects invalid schedules', () => {
   assert.equal(isNewsCronStarted(), true);
   stopNewsCron();
   assert.equal(isNewsCronStarted(), false);
+});
+
+test('cron runner prevents overlap and logs ingestion failures', async () => {
+  let resolveFirst;
+  let calls = 0;
+  const warnings = [];
+  const errors = [];
+  const runner = createCronRunner({
+    refreshNews: async () => {
+      calls += 1;
+      await new Promise((resolve) => { resolveFirst = resolve; });
+      throw new Error('ingestion failed');
+    },
+    logger: {
+      warn: (message) => warnings.push(message),
+      error: (details, message) => errors.push({ details, message }),
+    },
+  });
+
+  const first = runner();
+  const second = await runner();
+  assert.equal(second, false);
+  assert.equal(calls, 1);
+  assert.equal(warnings.length, 1);
+  resolveFirst();
+  assert.equal(await first, false);
+  assert.equal(errors.length, 1);
+});
+
+test('reports partial bulk-write inserts when MongoDB returns a write error', async () => {
+  const errors = [];
+  const result = await refreshNews({
+    NewsModel: {
+      find: () => ({ select: () => ({ lean: async () => [] }) }),
+      bulkWrite: async () => {
+        const error = new Error('one write failed');
+        error.result = { upsertedCount: 1 };
+        throw error;
+      },
+    },
+    fetchContent: false,
+    fetchFeeds: async () => ({
+      articles: [{ url: 'https://example.com/partial', title: 'A' }],
+      results: [{ error: null }],
+    }),
+    enrichArticle: async () => ({ summary: 'Summary', tags: ['cloud'], domains: ['Cloud'] }),
+    logger: { error: (details) => errors.push(details) },
+  });
+  assert.equal(result.inserted, 1);
+  assert.equal(result.persistenceFailures, 1);
+  assert.equal(result.status, 'partial');
+  assert.equal(errors.length, 1);
 });
 
 test('isolates invalid feeds and handles empty feeds', async () => {

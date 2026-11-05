@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const env = require('dotenv');
 const path = require('path');
+const { startNewsCron, stopNewsCron, isNewsCronEnabled } = require('./utils/newsCron');
 
 // Load Env variables
 env.config();
@@ -35,9 +36,34 @@ app.use(express.json());
 // Access via: http://localhost:5000/uploads/filename.pdf
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+let server;
+
+async function shutdown(signal) {
+  stopNewsCron();
+  if (server) await new Promise((resolve) => server.close(resolve));
+  if (mongoose.connection.readyState !== 0) await mongoose.disconnect();
+  console.log(`Server shut down after ${signal}`);
+}
+
 // Database Connection
 mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log("MongoDB Connected"))
+    .then(() => {
+      console.log("MongoDB Connected");
+      if (isNewsCronEnabled()) {
+        try {
+          startNewsCron();
+          console.log(`News cron started with schedule ${process.env.NEWS_CRON_SCHEDULE || '0 * * * *'}`);
+        } catch (error) {
+          console.error('News cron failed to start:', error.message);
+        }
+      } else {
+        console.log('News cron is disabled');
+      }
+
+      server = app.listen(PORT, () => {
+        console.log(` Server running on PORT: ${PORT}`);
+      });
+    })
     .catch((err) => console.error("MongoDB connection failed:", err));
 
 // Routes
@@ -50,7 +76,7 @@ app.use('/api/interviews', require('./routes/interviewRoutes'));
 // Resume Upload Route
 // Note: Changed from { upload } to upload to match your module.exports
 const { protect } = require('./middleware/authMiddleware');
-const upload = require('./middleware/uploadMiddleware'); 
+const upload = require('./middleware/uploadMiddleware');
 const User = require('./models/User');
 
 app.post('/api/user/resume', protect, upload.single('resume'), async (req, res) => {
@@ -58,8 +84,8 @@ app.post('/api/user/resume', protect, upload.single('resume'), async (req, res) 
     if (!req.file) return res.status(400).json({ message: "No file uploaded" });
 
     const user = await User.findByIdAndUpdate(
-      req.user.id, 
-      { resumePath: req.file.path }, 
+      req.user.id,
+      { resumePath: req.file.path },
       { new: true }
     );
     res.json({ message: 'Resume uploaded successfully', path: user.resumePath });
@@ -72,6 +98,5 @@ app.get('/', (req, res) => {
     res.send("API is running.");
 });
 
-app.listen(PORT, () => {
-    console.log(` Server running on PORT: ${PORT}`);
-});
+process.once('SIGINT', () => { shutdown('SIGINT').finally(() => process.exit(0)); });
+process.once('SIGTERM', () => { shutdown('SIGTERM').finally(() => process.exit(0)); });

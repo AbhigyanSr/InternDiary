@@ -96,6 +96,8 @@ async function refreshNews(options = {}) {
         const result = await ExistingNews.bulkWrite(operations, { ordered: false });
         stats.inserted = result.upsertedCount || 0;
       } catch (error) {
+        const partialResult = error.result || error;
+        stats.inserted = partialResult.upsertedCount || partialResult.nUpserted || 0;
         stats.persistenceFailures += 1;
         options.logger?.error?.({ error: error.message }, 'News persistence failed');
       }
