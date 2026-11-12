@@ -17,6 +17,17 @@ const opportunitySchema = new mongoose.Schema({
   description: {
     type: String,
   },
+  location: {
+    type: String,
+  },
+  skillsRequired: {
+    type: [String],
+    default: [],
+  },
+  experienceYears: {
+    type: Number,
+    min: 0,
+  },
   applyLink: {
     type: String,
     required: true,

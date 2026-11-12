@@ -118,6 +118,18 @@ export default function JobCard({ job, onApply, isApplied }) {
                 </div>
               </div>
 
+              {(job.location || job.skillsRequired?.length || (job.experienceYears !== null && job.experienceYears !== undefined)) && (
+                <div className="flex flex-wrap gap-2">
+                  {job.location && <span className="chip chip-neutral">Location: {job.location}</span>}
+                  {job.experienceYears !== null && job.experienceYears !== undefined && (
+                    <span className="chip chip-neutral">Experience: {job.experienceYears} years</span>
+                  )}
+                  {(job.skillsRequired || []).map((skill) => (
+                    <span className="chip" key={skill}>{skill}</span>
+                  ))}
+                </div>
+              )}
+
               <div className="flex flex-wrap items-center gap-3 pt-2">
                 <span className="chip">
                   Available Until: {new Date(job.deadline).toLocaleString('en-US', { 

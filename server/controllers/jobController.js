@@ -1,13 +1,40 @@
 const Opportunity = require('../models/Opportunity');
 
+const normalizeSkills = (skills) => {
+  if (Array.isArray(skills)) {
+    return skills.map((skill) => String(skill).trim()).filter(Boolean);
+  }
+  if (typeof skills === 'string') {
+    return skills.split(',').map((skill) => skill.trim()).filter(Boolean);
+  }
+  return [];
+};
+
+const normalizePdfUrl = (pdfUrl) => {
+  if (typeof pdfUrl !== 'string' || !pdfUrl.trim()) return null;
+  const normalized = pdfUrl.trim().replace(/\\/g, '/');
+  return normalized.startsWith('uploads/') ? normalized : null;
+};
+
 // @desc    Create a new internship (Admin Only)
 // @route   POST /api/jobs
 const createJob = async (req, res) => {
   try {
-    const { company, title, applyLink, deadline, description, type } = req.body;
+    const {
+      company,
+      title,
+      applyLink,
+      deadline,
+      description,
+      type,
+      location,
+      skillsRequired,
+      experienceYears,
+      pdfUrl: requestedPdfUrl,
+    } = req.body;
     
     // Optional: If you want admins to upload a specific JD PDF for the job
-    const pdfUrl = req.file ? req.file.path : null; 
+    const pdfUrl = req.file ? req.file.path : normalizePdfUrl(requestedPdfUrl);
 
     if (!company || !title || !applyLink || !deadline) {
       return res.status(400).json({ message: 'Please fill all required fields' });
@@ -20,6 +47,11 @@ const createJob = async (req, res) => {
       deadline,
       description,
       type,
+      location,
+      skillsRequired: normalizeSkills(skillsRequired),
+      experienceYears: experienceYears === '' || experienceYears === null || experienceYears === undefined
+        ? undefined
+        : Number(experienceYears),
       pdfUrl,
       postedBy: req.user.id, // Linked to the Admin who created it
     });
@@ -46,7 +78,7 @@ const getJobs = async (req, res) => {
 // @route   PUT /api/jobs/:id
 const updateJob = async (req, res) => {
   try {
-    const { company, title, applyLink, deadline, description, type } = req.body;
+    const { company, title, applyLink, deadline, description, type, location, skillsRequired, experienceYears } = req.body;
     
     const job = await Opportunity.findById(req.params.id);
     if (!job) return res.status(404).json({ message: 'Job not found' });
@@ -58,6 +90,9 @@ const updateJob = async (req, res) => {
     job.deadline = deadline || job.deadline;
     job.description = description || job.description;
     job.type = type || job.type;
+    job.location = location || job.location;
+    if (skillsRequired !== undefined) job.skillsRequired = normalizeSkills(skillsRequired);
+    if (experienceYears !== undefined && experienceYears !== '') job.experienceYears = Number(experienceYears);
 
     const updatedJob = await job.save();
     res.json(updatedJob);

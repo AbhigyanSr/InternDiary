@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { apiRequest } from '../services/api.js';
+import { apiRequest, uploadRequest } from '../services/api.js';
 
 export default function AdminDashboard() {
   const [formData, setFormData] = useState({
@@ -9,9 +9,16 @@ export default function AdminDashboard() {
     applyLink: '',
     deadlineDate: '',
     deadlineTime: '',
-    type: 'Internship'
+    type: 'Internship',
+    location: '',
+    skillsRequired: '',
+    experienceYears: ''
   });
   const [error, setError] = useState('');
+  const [pdfError, setPdfError] = useState('');
+  const [pdfFile, setPdfFile] = useState(null);
+  const [pdfLoading, setPdfLoading] = useState(false);
+  const [pdfSuccess, setPdfSuccess] = useState('');
   const [jobs, setJobs] = useState([]);
   const [loadingJobs, setLoadingJobs] = useState(true);
   const [editingId, setEditingId] = useState(null);
@@ -65,8 +72,14 @@ export default function AdminDashboard() {
       return;
     }
 
-    const { deadlineDate, deadlineTime, ...restForm } = formData;
-    const payload = { ...restForm, deadline: deadlineLocal.toISOString() };
+    const { deadlineDate, deadlineTime, skillsRequired, experienceYears, ...restForm } = formData;
+    const payload = {
+      ...restForm,
+      deadline: deadlineLocal.toISOString(),
+      skillsRequired: skillsRequired.split(',').map((skill) => skill.trim()).filter(Boolean),
+      experienceYears: experienceYears === '' ? undefined : Number(experienceYears),
+      pdfUrl: formData.pdfUrl
+    };
 
     const token = localStorage.getItem('token');
     
@@ -95,10 +108,49 @@ export default function AdminDashboard() {
         applyLink: '',
         deadlineDate: '',
         deadlineTime: '',
-        type: 'Internship'
+        type: 'Internship',
+        location: '',
+        skillsRequired: '',
+        experienceYears: ''
       });
     } catch (err) {
       setError(err.message || `Failed to ${editingId ? 'update' : 'post'} job`);
+    }
+  };
+
+  const handlePdfExtract = async (e) => {
+    e.preventDefault();
+    setPdfError('');
+    setPdfSuccess('');
+    if (!pdfFile) {
+      setPdfError('Select a PDF job description first.');
+      return;
+    }
+
+    setPdfLoading(true);
+    try {
+      const data = new FormData();
+      data.append('jobPdf', pdfFile);
+      const extracted = await uploadRequest('/jobs/parse-pdf', data, localStorage.getItem('token'));
+      const { deadlineDate, deadlineTime } = toLocalDateTimeParts(extracted.deadline);
+      setFormData({
+        company: extracted.company || '',
+        title: extracted.title || '',
+        description: extracted.description || '',
+        applyLink: extracted.applyLink || '',
+        deadlineDate,
+        deadlineTime,
+        type: extracted.type || 'Internship',
+        location: extracted.location || '',
+        skillsRequired: (extracted.skillsRequired || []).join(', '),
+        experienceYears: extracted.experienceYears ?? '',
+        pdfUrl: extracted.pdfUrl || ''
+      });
+      setPdfSuccess('Details extracted. Review every field before publishing.');
+    } catch (err) {
+      setPdfError(err.message || 'Could not extract job details from this PDF.');
+    } finally {
+      setPdfLoading(false);
     }
   };
 
@@ -111,7 +163,11 @@ export default function AdminDashboard() {
       applyLink: job.applyLink,
       deadlineDate,
       deadlineTime,
-      type: job.type || 'Internship'
+      type: job.type || 'Internship',
+      location: job.location || '',
+      skillsRequired: (job.skillsRequired || []).join(', '),
+      experienceYears: job.experienceYears ?? '',
+      pdfUrl: job.pdfUrl || ''
     });
     setEditingId(job._id);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -126,7 +182,10 @@ export default function AdminDashboard() {
       applyLink: '',
       deadlineDate: '',
       deadlineTime: '',
-      type: 'Internship'
+      type: 'Internship',
+      location: '',
+      skillsRequired: '',
+      experienceYears: ''
     });
     setError('');
   };
@@ -160,6 +219,26 @@ export default function AdminDashboard() {
           {error}
         </div>
       )}
+
+      <section className="card p-8 space-y-5">
+        <div>
+          <h2 className="font-sans font-semibold text-2xl text-zinc-900 tracking-tight">Create Job from PDF</h2>
+          <p className="text-muted mt-1">AI extraction never publishes automatically. Review and edit the fields below, then publish explicitly.</p>
+        </div>
+        {pdfError && <div className="p-4 bg-rose-50 border border-rose-200/60 text-rose-700 rounded-lg text-sm">{pdfError}</div>}
+        {pdfSuccess && <div className="p-4 bg-emerald-50 border border-emerald-200/60 text-emerald-700 rounded-lg text-sm">{pdfSuccess}</div>}
+        <form onSubmit={handlePdfExtract} className="flex flex-col md:flex-row gap-3">
+          <input
+            type="file"
+            accept="application/pdf,.pdf"
+            className="field flex-1"
+            onChange={(e) => setPdfFile(e.target.files?.[0] || null)}
+          />
+          <button type="submit" className="btn-primary px-6 py-3" disabled={pdfLoading}>
+            {pdfLoading ? 'Extracting...' : 'Extract Job Details'}
+          </button>
+        </form>
+      </section>
       
       <form onSubmit={handleSubmit} className="card p-8 space-y-5">
         <div>
@@ -173,6 +252,18 @@ export default function AdminDashboard() {
             onChange={(e) => setFormData({...formData, company: e.target.value})}
             placeholder="e.g. Google"
           />
+        </div>
+        <div>
+          <label htmlFor="location">Location</label>
+          <input id="location" type="text" className="field" value={formData.location} onChange={(e) => setFormData({...formData, location: e.target.value})} placeholder="e.g. Remote or Bengaluru" />
+        </div>
+        <div>
+          <label htmlFor="skillsRequired">Required Skills</label>
+          <input id="skillsRequired" type="text" className="field" value={formData.skillsRequired} onChange={(e) => setFormData({...formData, skillsRequired: e.target.value})} placeholder="Comma-separated skills" />
+        </div>
+        <div>
+          <label htmlFor="experienceYears">Required Experience (years)</label>
+          <input id="experienceYears" type="number" min="0" step="0.5" className="field" value={formData.experienceYears} onChange={(e) => setFormData({...formData, experienceYears: e.target.value})} placeholder="e.g. 2" />
         </div>
         <div>
           <label htmlFor="title">Job Title</label>

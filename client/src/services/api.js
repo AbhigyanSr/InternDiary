@@ -47,6 +47,20 @@ export const apiRequest = async (endpoint, method = 'GET', body = null, token = 
   return data;
 };
 
+export const uploadRequest = async (endpoint, formData, token = null) => {
+  const headers = {};
+  if (token) headers.Authorization = `Bearer ${token}`;
+
+  const response = await fetch(`${API_URL}${endpoint}`, {
+    method: 'POST',
+    headers,
+    body: formData,
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data.message || 'Upload failed');
+  return data;
+};
+
 export const resetPassword = async (email) => {
   return apiRequest('/auth/forgot-password', 'POST', { email });
 };
