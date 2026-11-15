@@ -64,12 +64,23 @@ async function listNews(filter, query) {
   return { articles, page, pages: Math.max(Math.ceil(total / limit), 1), total };
 }
 
-// @desc    Latest news for everyone (landing page, "All" tab)
+const GUEST_ARTICLE_LIMIT = 3;
+
+// @desc    Latest news. Guests (landing page) get only the 3 newest articles,
+//          unfiltered; logged-in users ("All" tab) get search, filters, paging.
 // @route   GET /api/news/public?page=&limit=&domain=&search=
-// @access  Public
+// @access  Public (full results with a valid token)
 const getPublicNews = async (req, res) => {
   try {
     maybeAutoRefresh();
+    if (!req.user) {
+      const articles = await News.find()
+        .select(LIST_FIELDS)
+        .sort({ publishedAt: -1, createdAt: -1 })
+        .limit(GUEST_ARTICLE_LIMIT)
+        .lean();
+      return res.json({ articles, page: 1, pages: 1, total: articles.length, guestPreview: true });
+    }
     res.json(await listNews({}, req.query));
   } catch (error) {
     res.status(500).json({ message: error.message });

@@ -3,8 +3,10 @@ const router = express.Router();
 const { getPublicNews, getPersonalizedNews, triggerRefresh, getNewsStatus } = require('../controllers/newsController');
 const { protect } = require('../middleware/authMiddleware');
 const { isAdmin } = require('../middleware/adminMiddleware');
+const { optionalAuth } = require('../models/optionalAuth');
 
-router.get('/public', getPublicNews);
+// Guests get only the latest few articles; logged-in users get everything
+router.get('/public', optionalAuth, getPublicNews);
 router.get('/personalized', protect, getPersonalizedNews);
 router.get('/status', protect, isAdmin, getNewsStatus);
 router.post('/refresh', protect, isAdmin, triggerRefresh);
