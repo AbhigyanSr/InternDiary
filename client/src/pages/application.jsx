@@ -18,6 +18,8 @@ export default function Applications() {
   const [editStatus, setEditStatus] = useState('applied');
   const [editNotes, setEditNotes] = useState('');
   const [updating, setUpdating] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
   const editingApp = apps.find(app => app._id === editingId) || null;
 
   useEffect(() => {
@@ -25,9 +27,12 @@ export default function Applications() {
     const token = localStorage.getItem('token');
     try {
       const data = await apiRequest('/applications', 'GET', null, token);
-      setApps(data);
+      setApps(data || []);
     } catch (err) {
       console.error("Error loading applications", err);
+      setLoadError(err.message || 'Could not load applications');
+    } finally {
+      setLoading(false);
     }
   };
   fetchMyApps();
@@ -95,13 +100,29 @@ export default function Applications() {
     try {
       const payload = {
         status: editStatus,
-        notes: editNotes.trim() || undefined
+        notes: editNotes.trim() // empty string clears existing notes
       };
       const updated = await apiRequest(`/applications/${appId}`, 'PATCH', payload, token);
       setApps(prev => prev.map(app => (app._id === appId ? updated : app)));
       cancelEdit();
     } catch (err) {
       setError(err.message || 'Failed to update application');
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const handleDelete = async (appId) => {
+    if (!window.confirm('Delete this application from your tracker?')) return;
+    const token = localStorage.getItem('token');
+    setUpdating(true);
+    setError('');
+    try {
+      await apiRequest(`/applications/${appId}`, 'DELETE', null, token);
+      setApps(prev => prev.filter(app => app._id !== appId));
+      cancelEdit();
+    } catch (err) {
+      setError(err.message || 'Failed to delete application');
     } finally {
       setUpdating(false);
     }
@@ -296,7 +317,15 @@ export default function Applications() {
             </tr>
           </thead>
           <tbody>
-            {pagedApps.length > 0 ? (
+            {loading ? (
+              <tr>
+                <td colSpan="3" className="text-center text-muted py-8">Loading applications...</td>
+              </tr>
+            ) : loadError ? (
+              <tr>
+                <td colSpan="3" className="text-center text-rose-700 py-8">{loadError}</td>
+              </tr>
+            ) : pagedApps.length > 0 ? (
               pagedApps.map((app) => (
                 <tr
                   key={app._id}
@@ -426,7 +455,20 @@ export default function Applications() {
                   placeholder="Add interview date, referral info, or reminders..."
                 />
               </div>
+              {error && (
+                <div className="bg-rose-50 border border-rose-200/60 text-rose-700 px-4 py-3 rounded-lg text-sm">
+                  {error}
+                </div>
+              )}
               <div className="flex items-center justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => handleDelete(editingApp._id)}
+                  disabled={updating}
+                  className="btn-outline text-rose-700 border-rose-200 hover:bg-rose-50 mr-auto"
+                >
+                  Delete
+                </button>
                 <button
                   type="button"
                   onClick={cancelEdit}

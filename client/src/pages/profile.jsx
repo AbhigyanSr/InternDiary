@@ -1,12 +1,20 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext.js';
 import DomainPreferences from '../components/DomainPreferences.jsx';
+import { fileUrl, getMe, uploadRequest } from '../services/api.js';
 
 export default function Profile() {
   const { user } = useAuth();
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [resumeUrl, setResumeUrl] = useState(user?.resumePath || '');
+
+  // The stored login data has no resumePath, so fetch it from the server.
+  useEffect(() => {
+    getMe(localStorage.getItem('token'))
+      .then((me) => setResumeUrl(me.resumePath || ''))
+      .catch((err) => console.error('Could not load profile', err));
+  }, []);
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -21,27 +29,12 @@ export default function Profile() {
 
     setUploading(true);
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/user/resume', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          // Note: Don't set Content-Type header when sending FormData; 
-          // the browser sets it automatically with the boundary string.
-        },
-        body: formData,
-      });
-
-      const data = await response.json();
-      if (response.ok) {
-        setResumeUrl(data.path);
-        alert("Resume uploaded successfully!");
-      } else {
-        alert(data.message);
-      }
+      const data = await uploadRequest('/user/resume', formData, localStorage.getItem('token'));
+      setResumeUrl(data.path);
+      alert("Resume uploaded successfully!");
     } catch (err) {
       console.error(err);
-      alert("Upload failed");
+      alert(err.message || "Upload failed");
     } finally {
       setUploading(false);
     }
@@ -68,7 +61,7 @@ export default function Profile() {
           <div className="mb-6 p-4 bg-emerald-50 border border-emerald-200/60 rounded-lg flex items-center justify-between">
             <span className="text-emerald-700 text-sm font-medium">✓ Resume is uploaded</span>
             <a 
-              href={`http://localhost:5000/${resumeUrl}`} 
+              href={fileUrl(resumeUrl)}
               target="_blank"
               rel="noopener noreferrer" 
               className="text-accent hover:text-accent-hover text-sm font-medium"

@@ -4,7 +4,8 @@ const router = express.Router();
 const { 
   getApplications, 
   addApplication, 
-  updateAppStatus 
+  updateAppStatus,
+  deleteApplication
 } = require('../controllers/appController');
 
 // 2. Check this import
@@ -14,5 +15,6 @@ const { protect } = require('../middleware/authMiddleware');
 router.get('/', protect, getApplications); 
 router.post('/', protect, addApplication);
 router.patch('/:id', protect, updateAppStatus);
+router.delete('/:id', protect, deleteApplication);
 
 module.exports = router;

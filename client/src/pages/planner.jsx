@@ -109,6 +109,8 @@ export default function Planner() {
           <option>DSA</option>
           <option>Resume</option>
           <option>Application</option>
+          <option>Behavioral</option>
+          <option>Other</option>
         </select>
         <button type="submit" className="btn-primary">
           Add Task

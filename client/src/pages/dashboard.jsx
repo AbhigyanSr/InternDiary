@@ -7,17 +7,23 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [appliedIds, setAppliedIds] = useState(new Set());
   const [filterType, setFilterType] = useState('All');
+  const [apps, setApps] = useState([]);
+  const [tasks, setTasks] = useState([]);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchJobs = async () => {
       try {
         const token = localStorage.getItem('token');
-        // Fetching jobs (Assume backend route /api/jobs returns last 24h jobs)
-        const [jobsData, appsData] = await Promise.all([
+        const [jobsData, appsData, tasksData] = await Promise.all([
           apiRequest('/jobs', 'GET', null, token),
-          apiRequest('/applications', 'GET', null, token)
+          apiRequest('/applications', 'GET', null, token),
+          // Stats only: a planner failure should not hide the job feed
+          apiRequest('/tasks', 'GET', null, token).catch(() => [])
         ]);
-        setJobs(jobsData);
+        setJobs(jobsData || []);
+        setApps(appsData || []);
+        setTasks(tasksData || []);
         const appliedSet = new Set(
           (appsData || [])
             .map(app => app?.opportunity)
@@ -26,6 +32,7 @@ export default function Dashboard() {
         setAppliedIds(appliedSet);
       } catch (err) {
         console.error("Failed to fetch jobs", err);
+        setError(err.message || 'Could not load opportunities');
       } finally {
         setLoading(false);
       }
@@ -36,8 +43,6 @@ export default function Dashboard() {
   const handleApply = async (job) => {
     try {
       const token = localStorage.getItem('token');
-      console.log('Applying to job:', job);
-
       if (!job?._id) {
         alert('Cannot apply: missing opportunity id');
         return;
@@ -49,12 +54,11 @@ export default function Dashboard() {
         status: 'applied',
         opportunity: job._id
       };
-      console.log('Application payload:', payload);
-
       // This sends the job details to our Application model in the backend
-      await apiRequest('/applications', 'POST', payload, token);
-      
+      const newApp = await apiRequest('/applications', 'POST', payload, token);
+
       setAppliedIds(prev => new Set(prev).add(job._id));
+      setApps(prev => [newApp, ...prev]);
       alert(`Tracked: Applied to ${job.company}`);
     } catch (err) {
       console.error('Error tracking application:', err);
@@ -78,9 +82,19 @@ export default function Dashboard() {
   // Separate active and missed opportunities
   const now = new Date();
   const activeJobs = filteredJobs.filter(job => new Date(job.deadline) >= now);
-  const missedJobs = filteredJobs.filter(job => 
+  const missedJobs = filteredJobs.filter(job =>
     new Date(job.deadline) < now && !appliedIds.has(job._id)
   );
+
+  const allActiveCount = jobs.filter(job => new Date(job.deadline) >= now).length;
+  const progressedApps = apps.filter(app => app.status === 'interviewing' || app.status === 'offer').length;
+  const completedTasks = tasks.filter(task => task.isCompleted).length;
+  const stats = [
+    { label: 'Active opportunities', value: allActiveCount },
+    { label: 'Applications tracked', value: apps.length },
+    { label: 'Interviews & offers', value: progressedApps },
+    { label: 'Prep tasks done', value: `${completedTasks}/${tasks.length}` },
+  ];
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -88,13 +102,29 @@ export default function Dashboard() {
         <div className="flex flex-col md:flex-row md:justify-between md:items-end gap-4 mb-4">
           <div>
             <h1 className="font-sans font-semibold text-3xl text-zinc-900 tracking-tight mb-1">Opportunity Feed</h1>
-            <p className="text-muted">New opportunities posted in the last 24 hours</p>
+            <p className="text-muted">Internships, hackathons and webinars posted by your placement team</p>
           </div>
           <div className="chip">
             {activeJobs.length} Active {activeJobs.length === 1 ? 'Opportunity' : 'Opportunities'}
           </div>
         </div>
         
+        {error && (
+          <div className="mb-4 p-4 bg-rose-50 border border-rose-200/60 text-rose-700 rounded-lg text-sm">
+            {error}
+          </div>
+        )}
+
+        {/* Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+          {stats.map(stat => (
+            <div key={stat.label} className="card p-4">
+              <p className="text-xs text-muted uppercase tracking-wider mb-1">{stat.label}</p>
+              <p className="font-sans font-semibold text-2xl text-zinc-900">{stat.value}</p>
+            </div>
+          ))}
+        </div>
+
         {/* Filter Bar */}
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-sm text-muted font-medium">Filter:</span>
@@ -141,7 +171,7 @@ export default function Dashboard() {
         <div className="card p-12 text-center" style={{ borderStyle: 'dashed' }}>
           <p className="text-muted">
             {jobs.length === 0 
-              ? 'No new opportunities found in the last 24 hours. Check back later!' 
+              ? 'No opportunities posted yet. Check back later!'
               : `No active ${filterType === 'All' ? 'opportunities' : filterType.toLowerCase() + 's'} found. Try a different filter.`}
           </p>
         </div>
@@ -161,7 +191,7 @@ export default function Dashboard() {
           <div className="dashboard-grid opacity-60">
             {missedJobs.map(job => (
               <div key={job._id} className="relative">
-                <div className="absolute inset-0 bg-black/30 backdrop-blur-[1px] z-10 rounded-xl flex items-center justify-center">
+                <div className="absolute inset-0 bg-black/30 backdrop-blur-[1px] z-10 rounded-xl flex items-center justify-center pointer-events-none">
                   <span className="chip chip-danger text-xs font-semibold">Time Passed</span>
                 </div>
                 <JobCard 

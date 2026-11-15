@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { apiRequest, uploadRequest } from '../services/api.js';
+import { apiRequest, uploadRequest, fileUrl } from '../services/api.js';
 
 export default function AdminDashboard() {
   const [formData, setFormData] = useState({
@@ -22,6 +22,7 @@ export default function AdminDashboard() {
   const [jobs, setJobs] = useState([]);
   const [loadingJobs, setLoadingJobs] = useState(true);
   const [editingId, setEditingId] = useState(null);
+  const [fileInputKey, setFileInputKey] = useState(0);
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -77,8 +78,9 @@ export default function AdminDashboard() {
       ...restForm,
       deadline: deadlineLocal.toISOString(),
       skillsRequired: skillsRequired.split(',').map((skill) => skill.trim()).filter(Boolean),
-      experienceYears: experienceYears === '' ? undefined : Number(experienceYears),
-      pdfUrl: formData.pdfUrl
+      // null (not undefined) so clearing the field on edit is sent to the server
+      experienceYears: experienceYears === '' || experienceYears === null ? null : Number(experienceYears),
+      pdfUrl: formData.pdfUrl || null
     };
 
     const token = localStorage.getItem('token');
@@ -111,8 +113,12 @@ export default function AdminDashboard() {
         type: 'Internship',
         location: '',
         skillsRequired: '',
-        experienceYears: ''
+        experienceYears: '',
+        pdfUrl: ''
       });
+      setPdfSuccess('');
+      setPdfFile(null);
+      setFileInputKey(key => key + 1);
     } catch (err) {
       setError(err.message || `Failed to ${editingId ? 'update' : 'post'} job`);
     }
@@ -146,7 +152,20 @@ export default function AdminDashboard() {
         experienceYears: extracted.experienceYears ?? '',
         pdfUrl: extracted.pdfUrl || ''
       });
-      setPdfSuccess('Details extracted. Review every field before publishing.');
+      const labels = {
+        title: 'Job Title',
+        company: 'Company Name',
+        applyLink: 'Application Link',
+        deadline: 'Available Until',
+        location: 'Location',
+        description: 'Job Description'
+      };
+      const missing = (extracted.missingFields || []).map(field => labels[field] || field);
+      setPdfSuccess(
+        'Details extracted. Review every field before publishing.' +
+        (missing.length ? ` Not found in the PDF, please fill in: ${missing.join(', ')}.` : '') +
+        (extracted.warning ? ` ${extracted.warning}` : '')
+      );
     } catch (err) {
       setPdfError(err.message || 'Could not extract job details from this PDF.');
     } finally {
@@ -185,7 +204,8 @@ export default function AdminDashboard() {
       type: 'Internship',
       location: '',
       skillsRequired: '',
-      experienceYears: ''
+      experienceYears: '',
+      pdfUrl: ''
     });
     setError('');
   };
@@ -229,6 +249,7 @@ export default function AdminDashboard() {
         {pdfSuccess && <div className="p-4 bg-emerald-50 border border-emerald-200/60 text-emerald-700 rounded-lg text-sm">{pdfSuccess}</div>}
         <form onSubmit={handlePdfExtract} className="flex flex-col md:flex-row gap-3">
           <input
+            key={fileInputKey}
             type="file"
             accept="application/pdf,.pdf"
             className="field flex-1"
@@ -334,6 +355,17 @@ export default function AdminDashboard() {
             <option value="Webinar">Webinar</option>
           </select>
         </div>
+        {formData.pdfUrl && (
+          <div className="flex flex-wrap items-center gap-3 text-sm">
+            <span className="chip chip-success">PDF attached</span>
+            <a href={fileUrl(formData.pdfUrl)} target="_blank" rel="noopener noreferrer" className="text-accent hover:text-accent-hover font-medium">
+              View PDF →
+            </a>
+            <button type="button" className="text-muted hover:text-rose-700" onClick={() => setFormData({ ...formData, pdfUrl: '' })}>
+              Remove
+            </button>
+          </div>
+        )}
         <div className="flex gap-3">
           <button type="submit" className="btn-primary flex-1 py-3">
             {editingId ? 'Update Opportunity' : 'Post Opportunity'}

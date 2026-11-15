@@ -1,15 +1,29 @@
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+// Set REACT_APP_API_URL at build time, e.g. https://your-backend.onrender.com/api
+export const API_URL = (process.env.REACT_APP_API_URL || 'http://localhost:5000/api').replace(/\/+$/, '');
+
+// Backend origin without the trailing /api, used for file links.
+const API_ORIGIN = API_URL.replace(/\/api$/, '');
+
+// Turns a stored file path ("/api/files/<id>" or legacy "uploads/x.pdf")
+// into an absolute URL on the backend.
+export const fileUrl = (path) => {
+  if (!path) return '';
+  if (/^https?:\/\//i.test(path)) return path;
+  return `${API_ORIGIN}/${String(path).replace(/\\/g, '/').replace(/^\/+/, '')}`;
+};
+
+const handleUnauthorized = () => {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  window.location.href = '/login';
+  return new Error('Your session has expired. Please log in again.');
+};
 
 export const apiRequest = async (endpoint, method = 'GET', body = null, token = null) => {
   const headers = { 'Content-Type': 'application/json' };
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
-    console.log('Authorization header set with token:', token.substring(0, 20) + '...');
-  } else {
-    console.warn('No token provided to apiRequest for endpoint:', endpoint);
   }
-
-  console.log('Making request to:', `${API_URL}${endpoint}`, 'with method:', method);
 
   const response = await fetch(`${API_URL}${endpoint}`, {
     method,
@@ -22,13 +36,9 @@ export const apiRequest = async (endpoint, method = 'GET', body = null, token = 
   // credentials" and must fall through to the normal error handling below
   // so the caller gets a real message instead of undefined.
   if (response.status === 401 && token) {
-    console.error('Unauthorized - clearing token');
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    window.location.href = '/login';
-    return;
+    throw handleUnauthorized();
   }
-  
+
   // Check if response is JSON
   const contentType = response.headers.get('content-type');
   if (!contentType || !contentType.includes('application/json')) {
@@ -36,14 +46,14 @@ export const apiRequest = async (endpoint, method = 'GET', body = null, token = 
     console.error('Non-JSON response:', text.substring(0, 200));
     throw new Error(`Server error: Expected JSON but got ${contentType || 'unknown content type'}`);
   }
-  
+
   const data = await response.json();
-  
+
   if (!response.ok) {
     console.error('API error:', response.status, data.message);
     throw new Error(data.message || 'Something went wrong');
   }
-  
+
   return data;
 };
 
@@ -56,6 +66,7 @@ export const uploadRequest = async (endpoint, formData, token = null) => {
     headers,
     body: formData,
   });
+  if (response.status === 401 && token) throw handleUnauthorized();
   const data = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(data.message || 'Upload failed');
   return data;

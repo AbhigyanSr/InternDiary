@@ -57,21 +57,39 @@ const addApplication = async (req, res) => {
 const updateAppStatus = async (req, res) => {
   try {
     const { status, notes } = req.body;
+    const update = {};
+    if (status !== undefined) update.status = status;
+    if (notes !== undefined) update.notes = notes; // '' clears the notes
     const app = await Application.findOneAndUpdate(
       { _id: req.params.id, user: req.user.id },
-      { status, notes },
-      { new: true }
+      update,
+      { new: true, runValidators: true }
     );
     if (!app) return res.status(404).json({ message: 'Application not found' });
     res.status(200).json(app);
   } catch (error) {
+    if (error.name === 'ValidationError' || error.name === 'CastError') {
+      return res.status(400).json({ message: error.message });
+    }
     res.status(500).json({ message: 'Update failed' });
   }
 };
 
-// THIS IS THE PART THAT WAS LIKELY MISSING:
+// Delete one of the logged-in user's applications
+const deleteApplication = async (req, res) => {
+  try {
+    const app = await Application.findOneAndDelete({ _id: req.params.id, user: req.user.id });
+    if (!app) return res.status(404).json({ message: 'Application not found' });
+    res.status(200).json({ message: 'Application deleted' });
+  } catch (error) {
+    if (error.name === 'CastError') return res.status(404).json({ message: 'Application not found' });
+    res.status(500).json({ message: 'Delete failed' });
+  }
+};
+
 module.exports = {
   getApplications,
   addApplication,
-  updateAppStatus
+  updateAppStatus,
+  deleteApplication
 };

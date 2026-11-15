@@ -45,8 +45,10 @@ const getInterviews = async (req, res) => {
     const { search, difficulty, outcome, page = 1, limit = 10 } = req.query;
 
     const query = { isApproved: true };
-    if (search) {
-      const regex = new RegExp(search, 'i');
+    if (search && String(search).trim()) {
+      // Escape user input so characters like "(" or "+" don't crash the query
+      const escaped = String(search).trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const regex = new RegExp(escaped, 'i');
       query.$or = [{ company: regex }, { role: regex }];
     }
     if (difficulty) query.difficulty = difficulty;
@@ -111,7 +113,7 @@ const getInterviewById = async (req, res) => {
     if (!interview) return res.status(404).json({ message: 'Interview experience not found' });
 
     const isOwnerOrAdmin =
-      req.user && (req.user.role === 'admin' || interview.author._id.toString() === req.user.id);
+      req.user && (req.user.role === 'admin' || interview.author?._id?.toString() === req.user.id);
 
     if (!interview.isApproved && !isOwnerOrAdmin) {
       return res.status(404).json({ message: 'Interview experience not found' });

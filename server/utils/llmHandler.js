@@ -50,45 +50,46 @@ function validateEnrichment(value) {
   };
 }
 
+// Lenient: a single malformed field becomes null (the admin fills it in on the
+// review form) instead of failing the whole extraction.
 function validateJobExtraction(value) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) {
     throw new Error('LLM response must be an object');
   }
 
-  const nullableStrings = ['title', 'company', 'type', 'description', 'applyLink', 'deadline', 'location'];
-  nullableStrings.forEach((field) => {
-    if (value[field] !== null && typeof value[field] !== 'string') {
-      throw new Error(`Invalid ${field}`);
-    }
-  });
-  if (value.type !== null && !['Internship', 'Hackathon', 'Webinar'].includes(value.type)) {
-    throw new Error('Invalid opportunity type');
-  }
-  if (!Array.isArray(value.skillsRequired) ||
-      !value.skillsRequired.every((skill) => typeof skill === 'string' && skill.trim())) {
-    throw new Error('Invalid skillsRequired');
-  }
-  if (value.experienceYears !== null &&
-      (typeof value.experienceYears !== 'number' || !Number.isFinite(value.experienceYears) || value.experienceYears < 0)) {
-    throw new Error('Invalid experienceYears');
-  }
-  if (value.deadline !== null && Number.isNaN(Date.parse(value.deadline))) {
-    throw new Error('Invalid deadline');
-  }
-  if (value.applyLink !== null && value.applyLink && !/^https?:\/\/\S+$/i.test(value.applyLink)) {
-    throw new Error('Invalid application link');
-  }
+  const text = (field) => (typeof value[field] === 'string' && value[field].trim() ? value[field].trim() : null);
+
+  const type = ['Internship', 'Hackathon', 'Webinar'].includes(value.type) ? value.type : null;
+
+  // Accept a bare URL, or pull the first http(s) URL out of a sentence.
+  const rawLink = text('applyLink');
+  const applyLink = rawLink ? (rawLink.match(/https?:\/\/[^\s)>\]"']+/i)?.[0] || null) : null;
+
+  // Date-only values become end of day *local* time (no "Z"), so "2026-12-01"
+  // is not shifted to 05:30 by the browser's timezone conversion.
+  const rawDeadline = text('deadline');
+  let deadline = null;
+  if (rawDeadline && /^\d{4}-\d{2}-\d{2}$/.test(rawDeadline)) deadline = `${rawDeadline}T23:59`;
+  else if (rawDeadline && !Number.isNaN(Date.parse(rawDeadline))) deadline = new Date(rawDeadline).toISOString();
+
+  const skillsRequired = Array.isArray(value.skillsRequired)
+    ? [...new Set(value.skillsRequired.filter((skill) => typeof skill === 'string' && skill.trim()).map((skill) => skill.trim()))]
+    : [];
+
+  const years = Number(value.experienceYears);
+  const experienceYears = value.experienceYears !== null && value.experienceYears !== undefined &&
+    value.experienceYears !== '' && Number.isFinite(years) && years >= 0 ? years : null;
 
   return {
-    title: value.title?.trim() || null,
-    company: value.company?.trim() || null,
-    type: value.type || null,
-    description: value.description?.trim() || null,
-    applyLink: value.applyLink?.trim() || null,
-    deadline: value.deadline ? new Date(value.deadline).toISOString() : null,
-    location: value.location?.trim() || null,
-    skillsRequired: [...new Set(value.skillsRequired.map((skill) => skill.trim()))],
-    experienceYears: value.experienceYears === null ? null : value.experienceYears,
+    title: text('title'),
+    company: text('company'),
+    type,
+    description: text('description'),
+    applyLink,
+    deadline,
+    location: text('location'),
+    skillsRequired,
+    experienceYears,
   };
 }
 

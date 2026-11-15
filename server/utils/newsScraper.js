@@ -5,7 +5,12 @@ const parser = new Parser({ timeout: 10000, maxRedirects: 3 });
 const MAX_CONTENT_LENGTH = 12000;
 const robotsCache = new Map();
 const ROBOTS_CACHE_TTL_MS = 60 * 60 * 1000;
+const BOT_TOKEN = 'InternDiaryNewsIngestion';
+const USER_AGENT = `${BOT_TOKEN}/1.0 (+https://github.com/AbhigyanSr/InternDiary)`;
 let lastRequestAt = 0;
+// Requests are serialized through this chain so concurrent feed fetches
+// still respect the configured interval instead of firing in a burst.
+let rateLimitQueue = Promise.resolve();
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -25,11 +30,15 @@ function normalizeUrl(value) {
   }
 }
 
-async function rateLimit(minimumInterval = 0) {
-  const interval = Number(process.env.NEWS_REQUEST_INTERVAL_MS || 1000);
-  const waitFor = Math.max(0, Math.max(interval, minimumInterval) - (Date.now() - lastRequestAt));
-  if (waitFor) await sleep(waitFor);
-  lastRequestAt = Date.now();
+function rateLimit(minimumInterval = 0) {
+  const run = rateLimitQueue.then(async () => {
+    const interval = Number(process.env.NEWS_REQUEST_INTERVAL_MS || 1000);
+    const waitFor = Math.max(0, Math.max(interval, minimumInterval) - (Date.now() - lastRequestAt));
+    if (waitFor) await sleep(waitFor);
+    lastRequestAt = Date.now();
+  });
+  rateLimitQueue = run.catch(() => {});
+  return run;
 }
 
 function parseRobots(robotsText) {
@@ -80,27 +89,31 @@ function getRobotsPolicy(robotsText, pathname, userAgent = 'NewsIngestionBot') {
   };
 }
 
+// The robots.txt *text* is cached per origin and evaluated per path, so one
+// article's allow/deny decision is never reused for a different path.
 async function getRobotsPolicyForUrl(url) {
   const parsed = new URL(url);
   const origin = parsed.origin;
-  const cached = robotsCache.get(origin);
+  let cached = robotsCache.get(origin);
   if (!cached || cached.expiresAt <= Date.now()) {
+    const expiresAt = Date.now() + ROBOTS_CACHE_TTL_MS;
     try {
       await rateLimit();
-      const response = await fetch(`${origin}/robots.txt`, { signal: AbortSignal.timeout(5000) });
-      if (response.status === 404 || response.status === 410) {
-        robotsCache.set(origin, { allowed: true, crawlDelay: 0, expiresAt: Date.now() + ROBOTS_CACHE_TTL_MS });
-      } else if (!response.ok) {
-        robotsCache.set(origin, { allowed: false, crawlDelay: 0, expiresAt: Date.now() + ROBOTS_CACHE_TTL_MS });
-      } else {
-        const policy = getRobotsPolicy(await response.text(), parsed.pathname);
-        robotsCache.set(origin, { ...policy, expiresAt: Date.now() + ROBOTS_CACHE_TTL_MS });
-      }
+      const response = await fetch(`${origin}/robots.txt`, {
+        headers: { 'user-agent': USER_AGENT },
+        signal: AbortSignal.timeout(5000),
+      });
+      if (response.status === 404 || response.status === 410) cached = { mode: 'allow-all', expiresAt };
+      else if (!response.ok) cached = { mode: 'deny-all', expiresAt };
+      else cached = { mode: 'rules', text: await response.text(), expiresAt };
     } catch {
-      robotsCache.set(origin, { allowed: false, crawlDelay: 0, expiresAt: Date.now() + ROBOTS_CACHE_TTL_MS });
+      cached = { mode: 'deny-all', expiresAt };
     }
+    robotsCache.set(origin, cached);
   }
-  return robotsCache.get(origin);
+  if (cached.mode === 'allow-all') return { allowed: true, crawlDelay: 0 };
+  if (cached.mode === 'deny-all') return { allowed: false, crawlDelay: 0 };
+  return getRobotsPolicy(cached.text, parsed.pathname, BOT_TOKEN);
 }
 
 async function canFetchArticle(url) {
@@ -121,16 +134,24 @@ function extractImage(item) {
   return enclosure || media?.$?.url || media?.url || '';
 }
 
+function toPlainText(value) {
+  if (!value) return '';
+  const text = String(value);
+  if (!/[<>]/.test(text)) return text.replace(/\s+/g, ' ').trim();
+  return cheerio.load(text).text().replace(/\s+/g, ' ').trim();
+}
+
 function normalizeItem(item, feed) {
   const url = normalizeUrl(item.link || item.guid || item.id);
   if (!url || !item.title?.trim()) return null;
+  const author = item.creator || item.author || item['dc:creator'] || '';
   return {
-    title: item.title.trim(),
+    title: toPlainText(item.title).slice(0, 500),
     url,
     source: feed.name,
-    author: item.creator || item.author || item['dc:creator'] || '',
+    author: (typeof author === 'string' ? author : String(author.name || '')).slice(0, 200),
     publishedAt: item.isoDate || item.pubDate || null,
-    description: item.contentSnippet || item.content || item.summary || '',
+    description: toPlainText(item.contentSnippet || item.content || item.summary || '').slice(0, 5000),
     imageUrl: extractImage(item),
     feedCategory: feed.category,
     domains: feed.domains,
@@ -142,7 +163,7 @@ async function fetchArticleContent(url) {
   if (!policy.allowed) return '';
   await rateLimit(policy.crawlDelay);
   const response = await fetch(url, {
-    headers: { 'user-agent': 'InternDiaryNewsIngestion/1.0 (+https://github.com/AbhigyanSr/InternDiary)' },
+    headers: { 'user-agent': USER_AGENT },
     signal: AbortSignal.timeout(Number(process.env.NEWS_ARTICLE_TIMEOUT_MS || 10000)),
   });
   if (!response.ok || !response.headers.get('content-type')?.includes('text/html')) return '';
@@ -157,7 +178,10 @@ async function fetchFeed(feed, options = {}) {
   try {
     await rateLimit();
     const response = await fetch(feed.url, {
-      headers: { accept: 'application/rss+xml, application/atom+xml, application/xml, text/xml' },
+      headers: {
+        accept: 'application/rss+xml, application/atom+xml, application/xml, text/xml',
+        'user-agent': USER_AGENT,
+      },
       signal: AbortSignal.timeout(Number(process.env.NEWS_FEED_TIMEOUT_MS || 10000)),
     });
     if (!response.ok) throw new Error(`Feed returned HTTP ${response.status}`);
@@ -166,6 +190,8 @@ async function fetchFeed(feed, options = {}) {
     for (const item of parsed.items || []) {
       const article = normalizeItem(item, feed);
       if (!article) continue;
+      // Content is normally fetched later, only for the articles selected for
+      // storage (see newsIngestion.js). This flag is kept for manual callers.
       if (options.fetchContent) {
         try { article.content = await fetchArticleContent(article.url); } catch (error) { article.contentError = error.message; }
       }

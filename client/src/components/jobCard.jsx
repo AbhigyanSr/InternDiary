@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { fileUrl } from '../services/api.js';
 
 export default function JobCard({ job, onApply, isApplied }) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -148,6 +149,16 @@ export default function JobCard({ job, onApply, isApplied }) {
                 >
                   View Full Posting →
                 </a>
+                {job.pdfUrl && (
+                  <a
+                    href={fileUrl(job.pdfUrl)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-outline px-5 py-2"
+                  >
+                    View JD PDF
+                  </a>
+                )}
                 {isApplied ? (
                   <span className="chip chip-success">
                     ✓ Already Applied

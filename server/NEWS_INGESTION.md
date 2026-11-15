@@ -37,15 +37,18 @@ npm test
 
 The real ingestion script is a separate integration test requiring live MongoDB, Gemini credentials, and external RSS/websites. It must not be used as a substitute for unit tests or unrestricted production verification.
 
-## API/UI handoff
+## API (implemented in `controllers/newsController.js`, `routes/newsRoutes.js`)
 
-The API/UI team owns:
+- `GET /api/news/public?page=&limit=&domain=&search=`: public, used by the landing page and the "All news" tab.
+- `GET /api/news/personalized?...`: logged-in; filters by `User.preferredDomains` (all news when none are set).
+- `POST /api/news/refresh`: admin; starts a background run and returns 202.
+- `GET /api/news/status`: admin; `running`, `lastRun` stats, total count.
 
-- `GET /api/news/public`
-- `GET /api/news/personalized`
-- `POST /api/news/refresh` (admin-only)
+Responses are `{ articles, page, pages, total }`. When news is requested and the newest article is older than `NEWS_AUTO_REFRESH_HOURS` (default 6), a background refresh starts. This is checked at most every 10 minutes and can be disabled with `NEWS_AUTO_REFRESH=false`. It exists because a sleeping Render instance never fires the cron.
 
-Personalized results should use `User.preferredDomains`. The ingestion layer provides normalized URLs, summaries, tags, domains, publication metadata, and source fields; route authentication, authorization, pagination, and presentation remain outside this module.
+## Selection and fallback behaviour
+
+Already-stored URLs are removed *before* the per-run article limit is applied, and candidates are interleaved round-robin across feeds (newest first), so every feed is represented and new articles keep being found. Article bodies are fetched only for the selected articles. If Gemini enrichment fails or no API key is configured, the article is stored anyway with a summary taken from the feed description (`fallbackSummaries` in the run stats). Articles skipped by the Gemini request budget are not stored and are picked up by the next run.
 
 ## Known limitations
 
