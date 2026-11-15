@@ -20,7 +20,7 @@ function InterviewBody({ interview }) {
         <div className="space-y-3">
           {interview.rounds.map((round, index) => (
             <div key={index}>
-              <h4 className="font-mono text-xs uppercase tracking-wider text-zinc-500 mb-1">Round {index + 1}</h4>
+              <h4 className="meta mb-1">Round {index + 1}</h4>
               <div className="text-sm leading-relaxed p-4 bg-page rounded-lg border border-soft whitespace-pre-line">{round}</div>
             </div>
           ))}
@@ -30,7 +30,7 @@ function InterviewBody({ interview }) {
       )}
       {interview.tips && (
         <div>
-          <h4 className="font-mono text-xs uppercase tracking-wider text-zinc-500 mb-1">Tips</h4>
+          <h4 className="meta mb-1">Tips</h4>
           <div className="text-sm leading-relaxed p-4 bg-page rounded-lg border border-soft whitespace-pre-line">{interview.tips}</div>
         </div>
       )}
@@ -157,10 +157,10 @@ export default function Interviews() {
   const filterChip = (active) => `chip cursor-pointer transition ${active ? '' : 'chip-neutral opacity-60 hover:opacity-100'}`;
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8">
+    <div className="max-w-4xl mx-auto space-y-10">
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
-          <h1 className="font-sans font-semibold text-3xl text-zinc-900 tracking-tight">Interview Experiences</h1>
+          <h1 className="page-title">Interview Experiences</h1>
           <p className="text-muted mt-1">Round-by-round accounts from students who have been through it</p>
         </div>
         <button type="button" onClick={() => setShowForm((prev) => !prev)} className="btn-primary">
@@ -170,12 +170,9 @@ export default function Interviews() {
 
       {showForm && (
         <form onSubmit={handleSubmit} className="card p-6 space-y-5">
-          <h3 className="font-sans font-semibold text-xl text-zinc-900 tracking-tight">Share your interview experience</h3>
+          <h3 className="form-title">Share your interview experience</h3>
           {formMessage.text && (
-            <div className={`px-4 py-3 rounded-lg text-sm border ${formMessage.type === 'error'
-              ? 'bg-rose-50 border-rose-200/60 text-rose-700'
-              : 'bg-emerald-50 border-emerald-200/60 text-emerald-700'}`}
-            >
+            <div className={`alert ${formMessage.type === 'error' ? 'alert-error' : 'alert-success'}`}>
               {formMessage.text}
             </div>
           )}
@@ -248,11 +245,11 @@ export default function Interviews() {
       {isAdmin && (
         <section className="card p-6 space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="font-sans font-semibold text-2xl text-zinc-900 tracking-tight">Moderation queue</h2>
+            <h2 className="section-title">Moderation queue</h2>
             <span className="chip">{pending.length} pending</span>
           </div>
           {moderationError && (
-            <div className="p-4 bg-rose-50 border border-rose-200/60 text-rose-700 rounded-lg text-sm">{moderationError}</div>
+            <div className="alert alert-error">{moderationError}</div>
           )}
           {pending.length === 0 ? (
             <p className="text-sm text-muted">No submissions waiting for review.</p>
@@ -262,8 +259,8 @@ export default function Interviews() {
                 <div key={item._id} className="p-4 rounded-lg border border-soft space-y-3">
                   <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
                     <div>
-                      <h3 className="font-sans font-medium text-xl text-zinc-900 tracking-tight">{item.role}</h3>
-                      <p className="font-mono text-xs uppercase tracking-wider text-zinc-500">{item.company}</p>
+                      <h3 className="item-title">{item.role}</h3>
+                      <p className="meta">{item.company}</p>
                       <p className="text-xs text-muted mt-1">
                         Submitted by {item.author?.name || 'Unknown user'}{item.author?.email ? ` (${item.author.email})` : ''} on{' '}
                         {new Date(item.createdAt).toLocaleDateString()}
@@ -273,7 +270,7 @@ export default function Interviews() {
                       <button type="button" className="btn-primary px-4 py-2 text-sm" onClick={() => moderate(item._id, 'approve')}>
                         Approve
                       </button>
-                      <button type="button" className="btn-outline text-rose-700 border-rose-200 hover:bg-rose-50 px-4 py-2 text-sm"
+                      <button type="button" className="btn-danger px-4 py-2 text-sm"
                         onClick={() => moderate(item._id, 'reject')}>
                         Reject
                       </button>
@@ -321,7 +318,7 @@ export default function Interviews() {
         </div>
 
         {error && (
-          <div className="p-4 bg-rose-50 border border-rose-200/60 text-rose-700 rounded-lg text-sm">{error}</div>
+          <div className="alert alert-error">{error}</div>
         )}
 
         {loading ? (
@@ -330,7 +327,7 @@ export default function Interviews() {
             <p className="text-muted">Loading experiences...</p>
           </div>
         ) : data.interviews.length === 0 ? (
-          <div className="card p-12 text-center" style={{ borderStyle: 'dashed' }}>
+          <div className="story-list py-16 text-center">
             <p className="text-muted">
               {search || difficulty || outcome
                 ? 'No experiences match these filters.'
@@ -338,11 +335,11 @@ export default function Interviews() {
             </p>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="story-list">
             {data.interviews.map((interview) => {
               const isExpanded = expandedId === interview._id;
               return (
-                <div key={interview._id} className="card p-5 space-y-4">
+                <div key={interview._id} className="story space-y-4">
                   <div
                     className="flex flex-col md:flex-row md:items-start md:justify-between gap-3 cursor-pointer"
                     onClick={() => setExpandedId(isExpanded ? null : interview._id)}
@@ -357,9 +354,9 @@ export default function Interviews() {
                     aria-expanded={isExpanded}
                   >
                     <div>
-                      <h3 className="font-sans font-medium text-xl text-zinc-900 tracking-tight">{interview.role}</h3>
-                      <p className="font-mono text-xs uppercase tracking-wider text-zinc-500">{interview.company}</p>
-                      <p className="text-xs text-muted mt-1">
+                      <p className="eyebrow mb-1.5">{interview.company}</p>
+                      <h3 className="item-title md:text-[1.5rem]">{interview.role}</h3>
+                      <p className="text-sm text-muted mt-1.5">
                         {interview.author?.name ? `Shared by ${interview.author.name} · ` : ''}
                         {new Date(interview.createdAt).toLocaleDateString()}
                         {` · ${(interview.rounds || []).length} round${(interview.rounds || []).length === 1 ? '' : 's'}`}
@@ -375,7 +372,7 @@ export default function Interviews() {
                     <>
                       <InterviewBody interview={interview} />
                       {isAdmin && (
-                        <button type="button" className="btn-outline text-rose-700 border-rose-200 hover:bg-rose-50 px-4 py-2 text-sm"
+                        <button type="button" className="btn-danger px-4 py-2 text-sm"
                           onClick={() => moderate(interview._id, 'reject')}>
                           Remove
                         </button>

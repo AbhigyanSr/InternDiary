@@ -160,7 +160,7 @@ export default function Applications() {
     <div className="max-w-5xl mx-auto space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
-          <h1 className="font-sans font-semibold text-3xl text-zinc-900 tracking-tight mb-1">Application Tracker</h1>
+          <h1 className="page-title mb-1">Application Tracker</h1>
           <p className="text-muted">Track any internship, even if it's not listed</p>
         </div>
         <button
@@ -178,7 +178,7 @@ export default function Applications() {
           className="card p-6 space-y-5"
         >
           <div className="flex items-center justify-between">
-            <h3 className="font-sans font-semibold text-xl text-zinc-900 tracking-tight">Add Opportunity</h3>
+            <h3 className="form-title">Add Opportunity</h3>
             <button
               type="button"
               onClick={() => setShowForm(false)}
@@ -189,7 +189,7 @@ export default function Applications() {
             </button>
           </div>
           {error && (
-            <div className="bg-rose-50 border border-rose-200/60 text-rose-700 px-4 py-3 rounded-lg text-sm">
+            <div className="alert alert-error">
               {error}
             </div>
           )}
@@ -291,7 +291,7 @@ export default function Applications() {
             <button
               type="button"
               onClick={() => setSearchQuery('')}
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 w-6 h-6 flex items-center justify-center rounded-full text-muted hover:text-primary hover:bg-white/5 transition-all duration-200"
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 w-6 h-6 flex items-center justify-center rounded-full text-muted hover:text-zinc-900 transition"
               aria-label="Clear search"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -323,7 +323,7 @@ export default function Applications() {
               </tr>
             ) : loadError ? (
               <tr>
-                <td colSpan="3" className="text-center text-rose-700 py-8">{loadError}</td>
+                <td colSpan="3" className="text-center text-[#9b3b2e] py-8">{loadError}</td>
               </tr>
             ) : pagedApps.length > 0 ? (
               pagedApps.map((app) => (
@@ -340,7 +340,7 @@ export default function Applications() {
                     }
                   }}
                 >
-                  <td className="font-mono text-xs uppercase tracking-wider text-zinc-500">{app.company}</td>
+                  <td className="meta">{app.company}</td>
                   <td className="text-muted">{app.role}</td>
                   <td>
                     <span className={`chip ${getStatusColor(app.status)}`}>
@@ -406,7 +406,7 @@ export default function Applications() {
             <div className="flex items-start justify-between p-6" style={{ borderBottom: '1px solid var(--border-separator)' }}>
               <div>
                 <p className="text-xs text-muted uppercase tracking-wider mb-1">Application Details</p>
-                <h3 className="font-sans font-semibold text-xl text-zinc-900 tracking-tight">{editingApp.company}</h3>
+                <h3 className="form-title">{editingApp.company}</h3>
                 <p className="text-sm text-muted">{editingApp.role}</p>
               </div>
               <button
@@ -456,7 +456,7 @@ export default function Applications() {
                 />
               </div>
               {error && (
-                <div className="bg-rose-50 border border-rose-200/60 text-rose-700 px-4 py-3 rounded-lg text-sm">
+                <div className="alert alert-error">
                   {error}
                 </div>
               )}
@@ -465,7 +465,7 @@ export default function Applications() {
                   type="button"
                   onClick={() => handleDelete(editingApp._id)}
                   disabled={updating}
-                  className="btn-outline text-rose-700 border-rose-200 hover:bg-rose-50 mr-auto"
+                  className="btn-danger mr-auto"
                 >
                   Delete
                 </button>

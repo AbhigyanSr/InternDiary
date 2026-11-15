@@ -87,8 +87,8 @@ export default function ForgotPassword() {
     <div className="auth-page">
       <div className="card auth-card p-8 space-y-6">
         <div className="text-center">
-          <h1 className="font-serif text-3xl text-zinc-950 tracking-tight text-gradient mb-2">Intern Diary</h1>
-          <h2 className="font-sans font-semibold text-2xl text-zinc-900 tracking-tight">
+          <h1 className="brand mb-2">Intern Diary</h1>
+          <h2 className="section-title">
             {step === 'email' && 'Reset your password'}
             {step === 'otp' && 'Verify OTP'}
             {step === 'password' && 'Set new password'}
@@ -101,13 +101,13 @@ export default function ForgotPassword() {
         </div>
 
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+          <div className="alert alert-error">
             {error}
           </div>
         )}
 
         {success && (
-          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+          <div className="alert alert-success">
             {success}
           </div>
         )}
@@ -245,7 +245,7 @@ export default function ForgotPassword() {
         <div className="text-center">
           <p className="text-muted text-sm">
             Remember your password?{' '}
-            <Link to="/login" className="text-accent hover:text-accent-hover font-medium">
+            <Link to="/login" className="link-accent font-medium">
               Sign in
             </Link>
           </p>

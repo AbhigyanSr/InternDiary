@@ -76,7 +76,7 @@ export default function Layout() {
           className={`mb-10 ${isSidebarCollapsed ? "flex items-center justify-center" : ""}`}
         >
           <h1
-            className={`font-serif text-3xl text-zinc-950 tracking-tight text-gradient ${isSidebarCollapsed ? "text-center text-lg" : ""}`}
+            className={`brand ${isSidebarCollapsed ? "text-center text-lg" : ""}`}
           >
             {isSidebarCollapsed ? "ID" : "Intern Diary"}
           </h1>
@@ -157,7 +157,7 @@ export default function Layout() {
           </div>
           <button
             onClick={logout}
-            className={`w-full text-left px-3 py-2 text-sm text-muted hover:text-rose-700 hover:bg-rose-50 rounded-md transition ${isSidebarCollapsed ? "text-center px-1 text-lg" : ""}`}
+            className={`w-full text-left px-3 py-2 text-sm text-muted hover:text-zinc-900 transition ${isSidebarCollapsed ? "text-center px-1 text-lg" : ""}`}
             title="Logout"
           >
             {isSidebarCollapsed ? "⏻" : "Logout"}
@@ -180,7 +180,7 @@ export default function Layout() {
       {/* Main Content Area */}
       <main className="flex-1">
         {/* Mobile Header */}
-        <header className="site-header sticky top-0 z-20 flex justify-between items-center px-6 py-4 md:px-8">
+        <header className="site-header md:hidden sticky top-0 z-20 flex justify-between items-center px-6 py-4 md:px-8">
           <div className="flex flex-col items-start gap-2">
             <button
               type="button"
@@ -191,12 +191,12 @@ export default function Layout() {
               <span className="w-4 h-0.5 bg-zinc-500 rounded"></span>
               <span className="w-4 h-0.5 bg-zinc-500 rounded"></span>
             </button>
-            <h1 className="font-serif text-3xl text-zinc-950 tracking-tight text-gradient">Intern Diary</h1>
+            <h1 className="brand">Intern Diary</h1>
           </div>
           <span className="text-xs text-muted">{user?.name}</span>
         </header>
 
-        <div className="p-6 md:p-8">
+        <div className="p-6 md:px-12 md:py-12">
           <Outlet />
         </div>
       </main>

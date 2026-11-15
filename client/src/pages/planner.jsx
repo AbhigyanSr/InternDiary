@@ -82,7 +82,7 @@ export default function Planner() {
   return (
     <div className="max-w-4xl mx-auto">
       <div className="mb-8">
-        <h1 className="font-sans font-semibold text-3xl text-zinc-900 tracking-tight mb-1">
+        <h1 className="page-title mb-1">
           Preparation Planner
         </h1>
         <p className="text-muted">Stay on top of your interview prep</p>
@@ -118,28 +118,28 @@ export default function Planner() {
       </form>
 
       {/* Task List */}
-      <div className="space-y-3">
+      <div className="story-list">
         {loading ? (
           <div className="text-center py-8">
             <div className="loading-spinner mx-auto mb-3"></div>
             <p className="text-muted">Loading tasks...</p>
           </div>
         ) : tasks.length === 0 ? (
-          <div className="card p-8 text-center">
+          <div className="py-12 text-center">
             <p className="text-muted">No tasks yet. Add your first task above!</p>
           </div>
         ) : (
           tasks.map((task) => (
             <div
               key={task._id}
-              className="card p-4 flex items-center justify-between gap-4"
+              className="py-4 flex items-center justify-between gap-4 border-b border-zinc-200"
             >
               <div className="flex items-center gap-4 flex-1 min-w-0">
                 <input
                   type="checkbox"
                   checked={task.isCompleted}
                   onChange={() => toggleTask(task._id)}
-                  className="h-5 w-5 accent-amber-500 rounded cursor-pointer flex-shrink-0"
+                  className="h-5 w-5 rounded cursor-pointer flex-shrink-0"
                 />
                 <span
                   className={`${task.isCompleted ? "line-through text-muted" : ""} font-medium truncate`}
@@ -153,7 +153,7 @@ export default function Planner() {
                 </span>
                 <button
                   onClick={() => deleteTask(task._id)}
-                  className="text-rose-700 hover:text-rose-900 text-sm transition"
+                  className="text-muted hover:text-zinc-900 text-sm transition"
                   title="Delete task"
                 >
                   ✕

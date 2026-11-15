@@ -26,8 +26,8 @@ export default function Login() {
     <div className="auth-page">
       <div className="card auth-card p-8 space-y-6">
         <div className="text-center">
-          <h1 className="font-serif text-3xl text-zinc-950 tracking-tight text-gradient mb-2">Intern Diary</h1>
-          <h2 className="font-sans font-semibold text-2xl text-zinc-900 tracking-tight">Welcome back</h2>
+          <h1 className="brand mb-2">Intern Diary</h1>
+          <h2 className="section-title">Welcome back</h2>
           <p className="text-muted text-sm mt-1">Sign in to continue your journey</p>
         </div>
         
@@ -48,7 +48,7 @@ export default function Login() {
           <div>
             <div className="flex justify-between items-center">
               <label htmlFor="password">Password</label>
-              <Link to="/forgot-password" className="text-accent hover:text-accent-hover text-sm font-medium">
+              <Link to="/forgot-password" className="link-accent text-sm font-medium">
                 Forgot?
               </Link>
             </div>
@@ -77,7 +77,7 @@ export default function Login() {
         <div className="text-center">
           <p className="text-muted text-sm">
             Don't have an account?{' '}
-            <Link to="/signup" className="text-accent hover:text-accent-hover font-medium">
+            <Link to="/signup" className="link-accent font-medium">
               Sign up
             </Link>
           </p>

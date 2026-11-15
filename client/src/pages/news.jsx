@@ -98,11 +98,11 @@ export default function News() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto">
-      <header className="mb-8">
+    <div className="max-w-4xl mx-auto">
+      <header className="mb-10">
         <div className="flex flex-col md:flex-row md:justify-between md:items-end gap-4 mb-4">
           <div>
-            <h1 className="font-sans font-semibold text-3xl text-zinc-900 tracking-tight">Tech News</h1>
+            <h1 className="page-title">Tech News</h1>
             <p className="text-muted mt-1">
               {tab === 'personalized' ? 'Headlines from the domains you follow' : 'Latest headlines across all domains'}
             </p>
@@ -115,7 +115,7 @@ export default function News() {
         </div>
 
         {refreshMessage && (
-          <div className="mb-4 p-4 bg-emerald-50 border border-emerald-200/60 text-emerald-700 rounded-lg text-sm">
+          <div className="mb-4 alert alert-success">
             {refreshMessage}
           </div>
         )}
@@ -178,13 +178,13 @@ export default function News() {
         {tab === 'personalized' && data.personalized === false && (
           <p className="text-sm text-muted mt-3">
             You have not picked any domains yet, so all news is shown.{' '}
-            <Link to="/profile" className="text-accent hover:text-accent-hover font-medium">Choose your domains</Link>
+            <Link to="/profile" className="link-accent font-medium">Choose your domains</Link>
           </p>
         )}
       </header>
 
       {error && (
-        <div className="mb-6 p-4 bg-rose-50 border border-rose-200/60 text-rose-700 rounded-lg text-sm">{error}</div>
+        <div className="mb-6 alert alert-error">{error}</div>
       )}
 
       {loading ? (
@@ -193,7 +193,7 @@ export default function News() {
           <p className="text-muted">Loading news...</p>
         </div>
       ) : data.articles.length === 0 ? (
-        <div className="card p-12 text-center" style={{ borderStyle: 'dashed' }}>
+        <div className="story-list py-16 text-center">
           <p className="text-muted">
             {search || domain
               ? 'No articles match these filters.'
@@ -204,7 +204,7 @@ export default function News() {
         </div>
       ) : (
         <>
-          <div className="dashboard-grid">
+          <div className="story-list">
             {data.articles.map((article) => (
               <NewsCard key={article._id} article={article} />
             ))}

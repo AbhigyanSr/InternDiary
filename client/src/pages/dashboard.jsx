@@ -101,26 +101,26 @@ export default function Dashboard() {
       <header className="mb-8">
         <div className="flex flex-col md:flex-row md:justify-between md:items-end gap-4 mb-4">
           <div>
-            <h1 className="font-sans font-semibold text-3xl text-zinc-900 tracking-tight mb-1">Opportunity Feed</h1>
+            <h1 className="page-title mb-1">Opportunity Feed</h1>
             <p className="text-muted">Internships, hackathons and webinars posted by your placement team</p>
           </div>
-          <div className="chip">
+          <p className="eyebrow">
             {activeJobs.length} Active {activeJobs.length === 1 ? 'Opportunity' : 'Opportunities'}
-          </div>
+          </p>
         </div>
         
         {error && (
-          <div className="mb-4 p-4 bg-rose-50 border border-rose-200/60 text-rose-700 rounded-lg text-sm">
+          <div className="mb-4 alert alert-error">
             {error}
           </div>
         )}
 
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+        <div className="stat-strip mb-8">
           {stats.map(stat => (
-            <div key={stat.label} className="card p-4">
-              <p className="text-xs text-muted uppercase tracking-wider mb-1">{stat.label}</p>
-              <p className="font-sans font-semibold text-2xl text-zinc-900">{stat.value}</p>
+            <div key={stat.label} className="stat">
+              <p className="stat-number">{stat.value}</p>
+              <p className="stat-caption">{stat.label}</p>
             </div>
           ))}
         </div>
@@ -182,7 +182,7 @@ export default function Dashboard() {
         <section className="mt-12">
           <div className="flex items-center gap-3 mb-6">
             <div className="flex-1 h-px bg-border-subtle"></div>
-            <h2 className="font-sans font-semibold text-2xl text-zinc-900 tracking-tight">Missed Opportunities</h2>
+            <h2 className="section-title">Missed Opportunities</h2>
             <div className="flex-1 h-px bg-border-subtle"></div>
           </div>
           <p className="text-sm text-muted text-center mb-6">
@@ -191,7 +191,7 @@ export default function Dashboard() {
           <div className="dashboard-grid opacity-60">
             {missedJobs.map(job => (
               <div key={job._id} className="relative">
-                <div className="absolute inset-0 bg-black/30 backdrop-blur-[1px] z-10 rounded-xl flex items-center justify-center pointer-events-none">
+                <div className="absolute inset-0 missed-overlay z-10 rounded-xl flex items-center justify-center pointer-events-none">
                   <span className="chip chip-danger text-xs font-semibold">Time Passed</span>
                 </div>
                 <JobCard 

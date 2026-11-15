@@ -230,23 +230,23 @@ export default function AdminDashboard() {
   return (
     <div className="max-w-5xl mx-auto space-y-8">
       <div>
-        <h1 className="font-sans font-semibold text-3xl text-zinc-900 tracking-tight mb-1">{editingId ? 'Edit Opportunity' : 'Admin: Post Opportunity'}</h1>
+        <h1 className="page-title mb-1">{editingId ? 'Edit Opportunity' : 'Admin: Post Opportunity'}</h1>
         <p className="text-muted">{editingId ? 'Update opportunity details' : 'Create new internships, hackathons, and webinars'}</p>
       </div>
       
       {error && (
-        <div className="p-4 bg-rose-50 border border-rose-200/60 text-rose-700 rounded-lg text-sm">
+        <div className="alert alert-error">
           {error}
         </div>
       )}
 
       <section className="card p-8 space-y-5">
         <div>
-          <h2 className="font-sans font-semibold text-2xl text-zinc-900 tracking-tight">Create Job from PDF</h2>
+          <h2 className="section-title">Create Job from PDF</h2>
           <p className="text-muted mt-1">AI extraction never publishes automatically. Review and edit the fields below, then publish explicitly.</p>
         </div>
-        {pdfError && <div className="p-4 bg-rose-50 border border-rose-200/60 text-rose-700 rounded-lg text-sm">{pdfError}</div>}
-        {pdfSuccess && <div className="p-4 bg-emerald-50 border border-emerald-200/60 text-emerald-700 rounded-lg text-sm">{pdfSuccess}</div>}
+        {pdfError && <div className="alert alert-error">{pdfError}</div>}
+        {pdfSuccess && <div className="alert alert-success">{pdfSuccess}</div>}
         <form onSubmit={handlePdfExtract} className="flex flex-col md:flex-row gap-3">
           <input
             key={fileInputKey}
@@ -358,10 +358,10 @@ export default function AdminDashboard() {
         {formData.pdfUrl && (
           <div className="flex flex-wrap items-center gap-3 text-sm">
             <span className="chip chip-success">PDF attached</span>
-            <a href={fileUrl(formData.pdfUrl)} target="_blank" rel="noopener noreferrer" className="text-accent hover:text-accent-hover font-medium">
+            <a href={fileUrl(formData.pdfUrl)} target="_blank" rel="noopener noreferrer" className="link-accent font-medium">
               View PDF →
             </a>
-            <button type="button" className="text-muted hover:text-rose-700" onClick={() => setFormData({ ...formData, pdfUrl: '' })}>
+            <button type="button" className="text-muted hover:text-zinc-900" onClick={() => setFormData({ ...formData, pdfUrl: '' })}>
               Remove
             </button>
           </div>
@@ -383,7 +383,7 @@ export default function AdminDashboard() {
       </form>
 
       <section className="space-y-4">
-        <h2 className="font-sans font-semibold text-2xl text-zinc-900 tracking-tight">Manage Opportunities</h2>
+        <h2 className="section-title">Manage Opportunities</h2>
         {loadingJobs ? (
           <div className="text-center py-8">
             <div className="loading-spinner mx-auto mb-3"></div>
@@ -394,15 +394,15 @@ export default function AdminDashboard() {
             <p className="text-muted">No internships posted yet. Create your first one above!</p>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="story-list">
             {jobs.map(job => (
               <div
                 key={job._id}
-                className="card p-5 flex flex-col md:flex-row md:items-start md:justify-between gap-4"
+                className="py-5 border-b border-zinc-200 flex flex-col md:flex-row md:items-start md:justify-between gap-4"
               >
                 <div className="flex-1">
-                  <h3 className="font-sans font-medium text-xl text-zinc-900 tracking-tight mb-1">{job.title}</h3>
-                  <p className="font-mono text-xs uppercase tracking-wider text-zinc-500 mb-2">{job.company}</p>
+                  <h3 className="item-title mb-1">{job.title}</h3>
+                  <p className="meta mb-2">{job.company}</p>
                   <div className="flex gap-2">
                     <span className="chip text-xs">
                       {job.type || 'Internship'}
@@ -423,7 +423,7 @@ export default function AdminDashboard() {
                   <button
                     type="button"
                     onClick={() => handleDelete(job._id)}
-                    className="btn-outline text-rose-700 border-rose-200 hover:bg-rose-50 px-4 py-2 text-sm"
+                    className="btn-danger px-4 py-2 text-sm"
                   >
                     Delete
                   </button>
